@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معاينة تطبيق استعادة واتساب اللاسلكي | Wireless ADB & WA Restore Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00A884;
+            --primary-dark: #008069;
+            --primary-light: #25D366;
+            --bg-dark: #121B22;
+            --surface-dark: #1F2C34;
+            --surface-card: #233138;
+            --text-primary: #E9EDEF;
+            --text-secondary: #8696A0;
+            --status-green: #00E676;
+            --status-red: #FF5252;
+            --status-orange: #FFAB00;
+            --terminal-bg: #0D1418;
+            --terminal-text: #25D366;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0f12 0%, #16242c 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-primary);
+        }
+
+        /* Phone Device Frame */
+        .phone-mockup {
+            width: 390px;
+            height: 820px;
+            background: var(--bg-dark);
+            border-radius: 44px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 0 12px #262c30, 0 0 0 14px #1a1e21;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #333a40;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 38px;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        .camera-notch {
+            width: 14px;
+            height: 14px;
+            background: #000;
+            border-radius: 50%;
+        }
+
+        /* App Screen Content */
+        .app-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* Header */
+        .app-header {
+            margin-bottom: 4px;
+        }
+
+        .app-header h1 {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .app-header p {
+            font-size: 12px;
+            color: var(--primary-light);
+            font-weight: 600;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--surface-dark);
+            border-radius: 14px;
+            padding: 16px;
+            border: 1px solid var(--surface-card);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary-light);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Status Row */
+        .status-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--status-red);
+            box-shadow: 0 0 10px var(--status-red);
+            transition: all 0.3s ease;
+        }
+
+        .status-dot.connected {
+            background: var(--status-green);
+            box-shadow: 0 0 10px var(--status-green);
+        }
+
+        .status-dot.pairing {
+            background: var(--status-orange);
+            box-shadow: 0 0 10px var(--status-orange);
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        .status-text {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .status-subtitle {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .btn {
+            border: none;
+            outline: none;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary-light);
+            color: var(--primary-light);
+        }
+
+        .btn-outline:hover {
+            background: rgba(37, 211, 102, 0.1);
+        }
+
+        .btn-action-restore {
+            width: 100%;
+            background: var(--primary-dark);
+            color: #ffffff;
+            font-size: 14px;
+            padding: 13px;
+            margin-top: 12px;
+            box-shadow: 0 4px 14px rgba(0, 168, 132, 0.3);
+        }
+
+        .btn-action-restore:hover {
+            background: var(--primary);
+        }
+
+        /* File Box */
+        .file-box {
+            background: var(--surface-card);
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text-primary);
+            border: 1px dashed var(--text-secondary);
+        }
+
+        .file-change-btn {
+            color: var(--primary-light);
+            background: none;
+            border: none;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Command Input */
+        .cmd-input-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .cmd-input {
+            flex: 1;
+            background: var(--surface-card);
+            border: 1px solid #364954;
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .cmd-input:focus {
+            border-color: var(--primary);
+        }
+
+        /* Terminal Window */
+        .terminal-box {
+            background: var(--terminal-bg);
+            border-radius: 10px;
+            padding: 10px;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #1a2730;
+            margin-top: 10px;
+        }
+
+        .terminal-logs {
+            flex: 1;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--terminal-text);
+            line-height: 1.5;
+            white-space: pre-wrap;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .terminal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .terminal-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .terminal-btn:hover {
+            color: var(--primary-light);
+        }
+
+        /* Modal Dialog */
+        .dialog-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            z-index: 100;
+        }
+
+        .dialog-card {
+            background: var(--surface-card);
+            border-radius: 18px;
+            padding: 20px;
+            width: 100%;
+            border: 1px solid #3a4b56;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .dialog-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--primary-light);
+        }
+
+        .dialog-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin: 8px 0 12px;
+            line-height: 1.4;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--surface-dark);
+            border: 1px solid #364954;
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+        }
+
+        .dialog-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-dark);
+        }
+
+        .nav-indicator {
+            width: 120px;
+            height: 4px;
+            background: #475a66;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-mockup">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span>01:45</span>
+            <div class="camera-notch"></div>
+            <span>📶 🔋 98%</span>
+        </div>
+
+        <!-- App Screen -->
+        <div class="app-content">
+            <!-- Header -->
+            <div class="app-header">
+                <h1>استعادة واتساب اللاسلكي</h1>
+                <p>Wireless ADB & WA Restore • v1.0</p>
+            </div>
+
+            <!-- Connection Status Card -->
+            <div class="card">
+                <div class="status-header">
+                    <div class="status-dot" id="statusDot"></div>
+                    <div>
+                        <div class="status-text" id="statusText">غير متصل (Disconnected)</div>
+                        <div class="status-subtitle" id="statusSubtitle">Port: Not connected</div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="btnOpenPairing">⚡ اقتران لاسلكي</button>
+                    <button class="btn btn-outline" id="btnQuickConnect">🔗 اتصال سريع</button>
+                </div>
+            </div>
+
+            <!-- WhatsApp Actions Card -->
+            <div class="card">
+                <div class="card-title">📦 إدارة نسخة واتساب الاحتياطية</div>
+                
+                <div class="file-box">
+                    <span id="filePathText">/sdcard/wa.ab</span>
+                    <button class="file-change-btn" id="btnChangeFile">تغيير</button>
+                </div>
+
+                <button class="btn btn-action-restore" id="btnRestore">🚀 استعادة ملف wa.ab بنقرة واحدة</button>
+                <button class="btn btn-outline" style="width: 100%; margin-top: 8px;" id="btnBackup">💾 أخذ نسخة احتياطية (bu backup)</button>
+            </div>
+
+            <!-- Terminal Card -->
+            <div class="card" style="flex: 1; display: flex; flex-direction: column;">
+                <div class="card-title">💻 موجه الأوامر المباشر (ADB Terminal)</div>
+
+                <div class="cmd-input-group">
+                    <input type="text" class="cmd-input" id="cmdInput" placeholder="اكتب أمر ADB هنا...">
+                    <button class="btn btn-primary" id="btnRunCmd" style="padding: 8px 14px;">تنفيذ</button>
+                </div>
+
+                <div class="terminal-box">
+                    <div class="terminal-logs" id="terminalLogs">[Ready] التطبيق جاهز. اضغط على 'اقتران لاسلكي' للبدء...</div>
+                    <div class="terminal-actions">
+                        <button class="terminal-btn" id="btnClearLogs">مسح</button>
+                        <button class="terminal-btn" id="btnCopyLogs" style="color: var(--primary-light)">نسخ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Bar -->
+        <div class="nav-bar">
+            <div class="nav-indicator"></div>
+        </div>
+
+        <!-- Pairing Popup Dialog -->
+        <div class="dialog-overlay" id="pairingDialog">
+            <div class="dialog-card">
+                <div class="dialog-title">الاقتران اللاسلكي (Wireless Pairing)</div>
+                <div class="dialog-desc">افتح خيارات المطور > تصحيح الأخطاء اللاسلكي > اقتران الجهاز برمز الاقتران، ثم أدخل البيانات:</div>
+
+                <button class="btn btn-outline" style="width: 100%; margin-bottom: 12px;" onclick="logMessage('[System] تم فتح صفحة خيارات المطور في إعدادات الهاتف.')">⚙️ فتح إعدادات المطور</button>
+
+                <div class="form-group">
+                    <label>منفذ الاقتران (Port مثلاً: 38455):</label>
+                    <input type="number" class="form-input" id="inputPairingPort" placeholder="38455" value="38455">
+                </div>
+
+                <div class="form-group">
+                    <label>رمز الاقتران (6 أرقام):</label>
+                    <input type="number" class="form-input" id="inputPairingCode" placeholder="123456" value="849201">
+                </div>
+
+                <div class="form-group">
+                    <label>منفذ الاتصال (Connection Port):</label>
+                    <input type="number" class="form-input" id="inputConnectPort" placeholder="5555" value="41253">
+                </div>
+
+                <div class="dialog-actions">
+                    <button class="btn btn-outline" id="btnCancelDialog" style="border: none; color: var(--text-secondary);">إلغاء</button>
+                    <button class="btn btn-primary" id="btnSubmitPairing">ابدأ الاقتران</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const statusSubtitle = document.getElementById('statusSubtitle');
+        const terminalLogs = document.getElementById('terminalLogs');
+        const pairingDialog = document.getElementById('pairingDialog');
+        const btnOpenPairing = document.getElementById('btnOpenPairing');
+        const btnCancelDialog = document.getElementById('btnCancelDialog');
+        const btnSubmitPairing = document.getElementById('btnSubmitPairing');
+        const btnQuickConnect = document.getElementById('btnQuickConnect');
+        const btnRestore = document.getElementById('btnRestore');
+        const btnBackup = document.getElementById('btnBackup');
+        const btnRunCmd = document.getElementById('btnRunCmd');
+        const cmdInput = document.getElementById('cmdInput');
+        const btnClearLogs = document.getElementById('btnClearLogs');
+        const btnCopyLogs = document.getElementById('btnCopyLogs');
+        const btnChangeFile = document.getElementById('btnChangeFile');
+        const filePathText = document.getElementById('filePathText');
+
+        let isConnected = false;
+
+        function logMessage(msg) {
+            const time = new Date().toLocaleTimeString();
+            terminalLogs.innerText += `\n[${time}] ${msg}`;
+            terminalLogs.scrollTop = terminalLogs.scrollHeight;
+        }
+
+        // Open Dialog
+        btnOpenPairing.addEventListener('click', () => {
+            pairingDialog.style.display = 'flex';
+        });
+
+        // Close Dialog
+        btnCancelDialog.addEventListener('click', () => {
+            pairingDialog.style.display = 'none';
+        });
+
+        // Submit Pairing
+        btnSubmitPairing.addEventListener('click', () => {
+            const port = document.getElementById('inputPairingPort').value;
+            const code = document.getElementById('inputPairingCode').value;
+            const connectPort = document.getElementById('inputConnectPort').value;
+
+            pairingDialog.style.display = 'none';
+
+            statusDot.className = 'status-dot pairing';
+            statusText.innerText = 'جاري الاقتران...';
+            statusSubtitle.innerText = `Pairing on port ${port}...`;
+            logMessage(`[Pairing] بدء مصافحة TLS بالمنفذ ${port} مع الرمز ${code}...`);
+
+            setTimeout(() => {
+                logMessage(`[Success] تم الاقتران بنجاح! جاري الاتصال بخادم ADB على المنفذ ${connectPort}...`);
+                statusDot.className = 'status-dot connected';
+                statusText.innerText = 'متصل بنجاح (ADB Ready)';
+                statusSubtitle.innerText = `Port: ${connectPort} | Host: 127.0.0.1`;
+                isConnected = true;
+                logMessage(`[ADB] خادم ADB جاهز لتنفيذ أي أمر محلي بدون روت وبدون حاسوب.`);
+            }, 1500);
+        });
+
+        // Quick Connect
+        btnQuickConnect.addEventListener('click', () => {
+            if (isConnected) {
+                logMessage(`[ADB] الجهاز متصل بالفعل.`);
+                return;
+            }
+            statusDot.className = 'status-dot pairing';
+            statusText.innerText = 'جاري الاتصال السريع...';
+            setTimeout(() => {
+                statusDot.className = 'status-dot connected';
+                statusText.innerText = 'متصل بنجاح (ADB Ready)';
+                statusSubtitle.innerText = `Port: 41253 | Host: 127.0.0.1`;
+                isConnected = true;
+                logMessage(`[Success] تم الاتصال السريع بنجاح.`);
+            }, 1000);
+        });
+
+        // Restore Action
+        btnRestore.addEventListener('click', () => {
+            if (!isConnected) {
+                alert('يرجى الاقتران أولاً لتفعيل أمر ADB!');
+                return;
+            }
+            const path = filePathText.innerText;
+            logMessage(`\n> bu restore ${path}`);
+            logMessage(`[Action] تم إرسال أمر الاستعادة! انظر إلى شاشة الهاتف واضغط (استعادة بياناتي / Restore My Data)...`);
+            setTimeout(() => {
+                logMessage(`[System] تم استقبال تأكيد الاستعادة من المستخدم بنجاح.`);
+                logMessage(`[Done] اكتملت استعادة النسخة الاحتياطية.`);
+            }, 2500);
+        });
+
+        // Backup Action
+        btnBackup.addEventListener('click', () => {
+            if (!isConnected) {
+                alert('يرجى الاقتران أولاً!');
+                return;
+            }
+            logMessage(`\n> bu backup -f /sdcard/wa.ab com.whatsapp`);
+            logMessage(`[Backup] جاري إنشاء النسخة الاحتياطية في /sdcard/wa.ab...`);
+            setTimeout(() => {
+                logMessage(`[Done] تم حفظ النسخة الاحتياطية بنجاح.`);
+            }, 2000);
+        });
+
+        // Custom Command
+        btnRunCmd.addEventListener('click', () => {
+            const cmd = cmdInput.value.trim();
+            if (!cmd) return;
+            if (!isConnected) {
+                alert('يرجى الاقتران أولاً!');
+                return;
+            }
+            logMessage(`\n> ${cmd}`);
+            if (cmd.includes('pm list')) {
+                logMessage(`package:com.whatsapp\npackage:com.android.settings\npackage:com.google.android.gms`);
+            } else {
+                logMessage(`[ADB Output] Executed successfully.`);
+            }
+            cmdInput.value = '';
+        });
+
+        // Clear Logs
+        btnClearLogs.addEventListener('click', () => {
+            terminalLogs.innerText = '[Logs cleared]';
+        });
+
+        // Copy Logs
+        btnCopyLogs.addEventListener('click', () => {
+            navigator.clipboard.writeText(terminalLogs.innerText);
+            alert('تم نسخ السجل إلى الحافظة!');
+        });
+
+        // File Change simulation
+        btnChangeFile.addEventListener('click', () => {
+            const newPath = prompt('أدخل مسار ملف النسخة الاحتياطية:', filePathText.innerText);
+            if (newPath) {
+                filePathText.innerText = newPath;
+                logMessage(`[File] تم تحديث مسار الملف إلى: ${newPath}`);
+            }
+        });
+    </script>
+</body>
+</html>
