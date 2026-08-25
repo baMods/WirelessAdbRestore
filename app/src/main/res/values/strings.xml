@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">استعادة واتساب اللاسلكي</string>
-    <string name="app_subtitle">Wireless ADB &amp; WA Restore</string>
+    <string name="app_subtitle">Wireless ADB &amp; WA Restore Pro</string>
     
     <!-- Status -->
     <string name="status_disconnected">غير متصل (Disconnected)</string>
@@ -11,10 +11,13 @@
     <string name="status_error">حدث خطأ في الاتصال</string>
 
     <!-- Buttons -->
-    <string name="btn_pair">اقتران لاسلكي جديد</string>
+    <string name="btn_pair">اقتران لاسلكي (اكتشاف تلقائي)</string>
     <string name="btn_connect">اتصال سريع</string>
     <string name="btn_disconnect">قطع الاتصال</string>
+    <string name="btn_install_old_wa">تثبيت واتساب القديم (Basheer_WApp)</string>
+    <string name="btn_grant_permissions">منح كافة الأذونات للواتساب</string>
     <string name="btn_restore_wa">استعادة ملف wa.ab بنقرة واحدة</string>
+    <string name="btn_open_confirm_screen">فتح شاشة تأكيد الاستعادة</string>
     <string name="btn_backup_wa">نسخ احتياطي لواتساب</string>
     <string name="btn_run_cmd">تنفيذ</string>
     <string name="btn_open_dev_settings">فتح إعدادات المطور</string>
@@ -23,20 +26,21 @@
     <string name="btn_choose_file">اختيار ملف wa.ab من الهاتف</string>
 
     <!-- Dialog -->
-    <string name="dialog_pairing_title">الاقتران اللاسلكي (Wireless Pairing)</string>
-    <string name="dialog_pairing_desc">افتح خيارات المطور > تصحيح الأخطاء اللاسلكي > اقتران الجهاز برمز الاقتران، ثم أدخل البيانات أدناه:</string>
-    <string name="hint_pairing_port">منفذ الاقتران (Port مثلاً: 38455)</string>
-    <string name="hint_pairing_code">رمز الاقتران المكون من 6 أرقام</string>
+    <string name="dialog_pairing_title">الاقتران اللاسلكي الذكي</string>
+    <string name="dialog_pairing_desc">افتح خيارات المطور > تصحيح الأخطاء اللاسلكي > اقتران الجهاز برمز الاقتران:</string>
+    <string name="hint_pairing_port">منفذ الاقتران (Pairing Port)</string>
+    <string name="hint_pairing_code">رمز الاقتران (6 أرقام)</string>
     <string name="hint_connect_port">منفذ الاتصال (Connection Port)</string>
-    <string name="hint_custom_cmd">اكتب أمر ADB هنا (مثال: bu restore /sdcard/wa.ab)</string>
+    <string name="hint_custom_cmd">اكتب أمر ADB هنا...</string>
     <string name="dialog_cancel">إلغاء</string>
-    <string name="dialog_confirm_pair">ابدأ الاقتران</string>
+    <string name="dialog_confirm_pair">بدء الاقتران والاتصال</string>
 
     <!-- Instructions & Warnings -->
-    <string name="quick_actions_title">الأوامر السريعة</string>
-    <string name="terminal_title">سجل المخرجات والكونسول</string>
+    <string name="step_connection_title">1. الاتصال اللاسلكي (Wireless ADB)</string>
+    <string name="step_install_title">2. تثبيت الواتساب المتوافق (Basheer_WApp)</string>
+    <string name="step_restore_title">3. استعادة النسخة الاحتياطية (Restore wa.ab)</string>
+    <string name="terminal_title">سجل المخرجات والكونسول (Terminal)</string>
     <string name="wa_file_path_label">مسار ملف النسخة الاحتياطية:</string>
     <string name="default_wa_path">/sdcard/wa.ab</string>
-    <string name="restore_started">تم إرسال أمر الاستعادة! يرجى النظر إلى شاشة الهاتف والضغط على (استعادة بياناتي / Restore My Data)...</string>
     <string name="permission_required">يلزم منح صلاحية الوصول للملفات</string>
 </resources>

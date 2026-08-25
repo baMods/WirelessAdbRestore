@@ -27,9 +27,47 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/dialog_pairing_desc"
+            android:text="1. اضغط على (فتح خيارات المطور).\n2. فعّل (تصحيح الأخطاء اللاسلكي) ثم اضغط (اقتران الجهاز برمز الاقتران).\n3. سيتم اكتشاف المنفذ تلقائياً، أدخل فقط الرمز المكون من 6 أرقام."
             android:textColor="@color/text_secondary"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:lineSpacingExtra="3dp" />
+
+        <!-- Auto Discovery Status Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardDiscoveryStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:cardBackgroundColor="#1A6366F1"
+            app:cardCornerRadius="8dp"
+            app:strokeColor="@color/primary"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="10dp"
+                android:gravity="center_vertical">
+
+                <ProgressBar
+                    android:id="@+id/pbDiscovery"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginEnd="8dp"
+                    android:indeterminate="true" />
+
+                <TextView
+                    android:id="@+id/tvDiscoveryStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🔍 جاري البحث عن المنفذ تلقائياً..."
+                    android:textColor="@color/primary_light"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnOpenDevSettings"
@@ -37,12 +75,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="@string/btn_open_dev_settings"
+            android:text="⚙️ فتح خيارات المطور (Developer Options)"
             android:textColor="@color/primary_light"
             app:strokeColor="@color/primary_light" />
 
         <!-- Pairing Port Input -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPairingPort"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -62,10 +101,11 @@
 
         <!-- Pairing Code Input -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPairingCode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="@string/hint_pairing_code"
+            android:hint="رمز الاقتران المكون من 6 أرقام (Pairing Code)"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:boxStrokeColor="@color/primary"
             app:hintTextColor="@color/primary">
@@ -76,12 +116,16 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:textColor="@color/text_primary"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:letterSpacing="0.1"
                 android:maxLength="6"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Connection Port Input -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilConnectPort"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"

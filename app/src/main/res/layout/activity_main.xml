@@ -23,7 +23,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="14dp">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -48,7 +48,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Status & Connection Card -->
+            <!-- 1. Connection Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -65,10 +65,19 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/step_connection_title"
+                        android:textColor="@color/primary_light"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
                         android:orientation="horizontal">
 
                         <!-- Status Dot -->
@@ -86,7 +95,7 @@
                             android:layout_weight="1"
                             android:text="@string/status_disconnected"
                             android:textColor="@color/text_primary"
-                            android:textSize="15sp"
+                            android:textSize="14sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -102,29 +111,31 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
+                        android:layout_marginTop="12dp"
                         android:orientation="horizontal">
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnPairing"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="48dp"
                             android:layout_weight="1"
                             android:layout_marginEnd="6dp"
                             android:backgroundTint="@color/primary"
                             android:text="@string/btn_pair"
                             android:textColor="#FFFFFF"
+                            android:textSize="13sp"
                             app:cornerRadius="10dp" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnQuickConnect"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="48dp"
                             android:layout_weight="1"
                             android:layout_marginStart="6dp"
                             android:text="@string/btn_connect"
                             android:textColor="@color/primary_light"
+                            android:textSize="13sp"
                             app:strokeColor="@color/primary_light"
                             app:cornerRadius="10dp" />
                     </LinearLayout>
@@ -132,7 +143,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- WhatsApp Actions Card -->
+            <!-- 2. Install Old WhatsApp Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -152,9 +163,72 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/quick_actions_title"
+                        android:text="@string/step_install_title"
                         android:textColor="@color/primary_light"
-                        android:textSize="16sp"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="تثبيت نسخة واتساب القديمة المدمجة (Basheer_WApp) التي تتيح استعادة النسخة الاحتياطية. يدعم التثبيت الإجباري لأندرويد 10 وتحت، وأندرويد 14+ (تجاوز حظر SDK القديم)."
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        android:lineSpacingExtra="2dp" />
+
+                    <!-- Install Old WhatsApp Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnInstallOldWa"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="12dp"
+                        android:backgroundTint="#059669"
+                        android:text="@string/btn_install_old_wa"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="10dp" />
+
+                    <!-- Grant Permissions Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnGrantPermissions"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/btn_grant_permissions"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp"
+                        app:strokeColor="@color/text_muted"
+                        app:cornerRadius="10dp" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 3. WhatsApp Restore Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                app:cardBackgroundColor="@color/surface_dark"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="4dp"
+                app:strokeColor="@color/surface_card"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/step_restore_title"
+                        android:textColor="@color/primary_light"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
 
                     <!-- File Path Box -->
@@ -182,7 +256,7 @@
                             style="@style/Widget.Material3.Button.TextButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="تغيير"
+                            android:text="تغيير / اختيار"
                             android:textColor="@color/primary_light" />
                     </LinearLayout>
 
@@ -199,22 +273,45 @@
                         android:textStyle="bold"
                         app:cornerRadius="10dp" />
 
-                    <!-- Backup Button -->
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnBackupWhatsApp"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="@string/btn_backup_wa"
-                        android:textColor="@color/text_primary"
-                        app:strokeColor="@color/text_muted"
-                        app:cornerRadius="10dp" />
+                        android:orientation="horizontal">
+
+                        <!-- Open Confirm Screen Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnOpenConfirmScreen"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="44dp"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="4dp"
+                            android:text="@string/btn_open_confirm_screen"
+                            android:textColor="@color/text_primary"
+                            android:textSize="12sp"
+                            app:strokeColor="@color/text_muted"
+                            app:cornerRadius="10dp" />
+
+                        <!-- Backup Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnBackupWhatsApp"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="44dp"
+                            android:layout_weight="1"
+                            android:layout_marginStart="4dp"
+                            android:text="@string/btn_backup_wa"
+                            android:textColor="@color/text_primary"
+                            android:textSize="12sp"
+                            app:strokeColor="@color/text_muted"
+                            app:cornerRadius="10dp" />
+                    </LinearLayout>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Custom Command & Terminal Card -->
+            <!-- 4. Custom Command & Terminal Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -235,7 +332,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/terminal_title"
                         android:textColor="@color/primary_light"
-                        android:textSize="16sp"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
 
                     <!-- Custom Command Input -->
@@ -296,7 +393,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="monospace"
-                                android:text="[Ready] التطبيق جاهز. اضغط على 'اقتران لاسلكي جديد' للبدء...\n"
+                                android:text="[Ready] التطبيق جاهز. اضغط على 'اقتران لاسلكي (اكتشاف تلقائي)' للبدء...\n"
                                 android:textColor="@color/terminal_text"
                                 android:textSize="12sp" />
                         </ScrollView>

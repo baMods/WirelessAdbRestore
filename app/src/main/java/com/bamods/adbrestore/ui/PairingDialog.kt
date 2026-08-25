@@ -3,10 +3,14 @@ package com.bamods.adbrestore.ui
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Toast
+import com.bamods.adbrestore.R
+import com.bamods.adbrestore.adb.AdbMdnsDiscovery
 import com.bamods.adbrestore.databinding.DialogPairingBinding
 
 class PairingDialog(
@@ -15,6 +19,7 @@ class PairingDialog(
 ) : Dialog(context) {
 
     private lateinit var binding: DialogPairingBinding
+    private var mdnsDiscovery: AdbMdnsDiscovery? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +28,25 @@ class PairingDialog(
         window?.setBackgroundDrawableResource(android.R.color.transparent)
 
         setupListeners()
+        startAutoDiscovery()
+    }
+
+    private fun startAutoDiscovery() {
+        mdnsDiscovery = AdbMdnsDiscovery(context).apply {
+            onPairingDiscovered = { port, _ ->
+                binding.etPairingPort.setText(port.toString())
+                binding.pbDiscovery.visibility = View.GONE
+                binding.tvDiscoveryStatus.text = "✅ تم اكتشاف منفذ الاقتران: $port (أدخل رمز الـ 6 أرقام فقط)"
+                binding.cardDiscoveryStatus.setCardBackgroundColor(Color.parseColor("#1A10B981"))
+                binding.etPairingCode.requestFocus()
+            }
+
+            onConnectDiscovered = { port, _ ->
+                binding.etConnectPort.setText(port.toString())
+            }
+
+            startDiscovery()
+        }
     }
 
     private fun setupListeners() {
@@ -65,5 +89,10 @@ class PairingDialog(
             dismiss()
             onPairRequested(pairingPort, pairingCode, connectPort)
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mdnsDiscovery?.stopDiscovery()
     }
 }

@@ -14,3 +14,5 @@
 .cxx
 local.properties
 /app/build
+release_apk/
+WirelessAdbRestore.apk
