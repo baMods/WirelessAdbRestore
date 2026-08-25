@@ -284,7 +284,7 @@ class MainActivity : AppCompatActivity() {
                         withContext(Dispatchers.Main) { appendLog("[Restore] تجهيز أذونات ملف النسخة الاحتياطية...") }
                         executeAdbCommand("cp $filePath /data/local/tmp/wa.ab 2>/dev/null; chmod 666 $filePath; chmod 666 /data/local/tmp/wa.ab 2>/dev/null")
 
-                        val restoreCmd = "bu restore $filePath"
+                        val restoreCmd = "cat \"$filePath\" | bu restore"
                         withContext(Dispatchers.Main) { appendLog("[Action] إرسال أمر الاستعادة...") }
                         executeAdbCommand(restoreCmd)
 
