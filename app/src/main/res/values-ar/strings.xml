@@ -17,4 +17,11 @@
     <string name="btn_restore_wa">استعادة البيانات</string>
     
     <string name="follow_me">تابعني على:</string>
+    
+    <!-- Pairing Dialog Strings -->
+    <string name="dialog_pairing_title">إقران الجهاز</string>
+    <string name="hint_pairing_port">منفذ الاقتران</string>
+    <string name="hint_connect_port">منفذ الاتصال</string>
+    <string name="dialog_cancel">إلغاء</string>
+    <string name="dialog_confirm_pair">اقتران</string>
 </resources>

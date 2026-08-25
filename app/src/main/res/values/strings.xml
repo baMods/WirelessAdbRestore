@@ -17,4 +17,11 @@
     <string name="btn_restore_wa">Restore Data</string>
     
     <string name="follow_me">Follow me:</string>
+    
+    <!-- Pairing Dialog Strings -->
+    <string name="dialog_pairing_title">Pair Device</string>
+    <string name="hint_pairing_port">Pairing Port</string>
+    <string name="hint_connect_port">Connection Port</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_confirm_pair">Pair</string>
 </resources>
