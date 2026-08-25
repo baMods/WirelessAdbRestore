@@ -35,42 +35,51 @@ class AdbConnection(
 
     suspend fun connect(host: String = "127.0.0.1", port: Int, useTls: Boolean = true): Result<Boolean> {
         return withContext(Dispatchers.IO) {
-            try {
-                disconnect()
+            val candidateHosts = linkedSetOf(host, "127.0.0.1", "localhost", "0.0.0.0")
+            var lastError: Exception? = null
 
-                if (useTls) {
-                    val sslContext = crypto.createSSLContext()
-                    val sslSocketFactory = sslContext.socketFactory
-                    val raw = Socket()
-                    raw.connect(InetSocketAddress(host, port), 8000)
-                    val sslSocket = sslSocketFactory.createSocket(raw, host, port, true) as SSLSocket
-                    sslSocket.startHandshake()
-                    socket = sslSocket
-                } else {
-                    val raw = Socket()
-                    raw.connect(InetSocketAddress(host, port), 8000)
-                    socket = raw
+            for (targetHost in candidateHosts) {
+                try {
+                    disconnect()
+
+                    if (useTls) {
+                        val sslContext = crypto.createSSLContext()
+                        val sslSocketFactory = sslContext.socketFactory
+                        val raw = Socket()
+                        raw.connect(InetSocketAddress(targetHost, port), 6000)
+                        raw.soTimeout = 10000
+                        val sslSocket = sslSocketFactory.createSocket(raw, targetHost, port, true) as SSLSocket
+                        sslSocket.enabledProtocols = arrayOf("TLSv1.3", "TLSv1.2")
+                        sslSocket.useClientMode = true
+                        sslSocket.startHandshake()
+                        socket = sslSocket
+                    } else {
+                        val raw = Socket()
+                        raw.connect(InetSocketAddress(targetHost, port), 6000)
+                        raw.soTimeout = 10000
+                        socket = raw
+                    }
+
+                    inStream = socket?.getInputStream()
+                    outStream = socket?.getOutputStream()
+
+                    // Send CNXN packet
+                    val systemInfo = "host::com.bamods.adbrestore\u0000".toByteArray(Charsets.UTF_8)
+                    writeMessage(A_CNXN, ADB_VERSION, MAX_PAYLOAD, systemInfo)
+
+                    // Read response
+                    val header = readHeader()
+                    if (header != null) {
+                        isConnected = true
+                        return@withContext Result.success(true)
+                    }
+                } catch (e: Exception) {
+                    lastError = e
+                    disconnect()
                 }
-
-                inStream = socket?.getInputStream()
-                outStream = socket?.getOutputStream()
-
-                // Send CNXN packet
-                val systemInfo = "host::com.bamods.adbrestore\u0000".toByteArray(Charsets.UTF_8)
-                writeMessage(A_CNXN, ADB_VERSION, MAX_PAYLOAD, systemInfo)
-
-                // Read response
-                val header = readHeader()
-                if (header != null) {
-                    isConnected = true
-                    Result.success(true)
-                } else {
-                    Result.failure(Exception("لم يتم استلام استجابة من خادم ADB"))
-                }
-            } catch (e: Exception) {
-                disconnect()
-                Result.failure(e)
             }
+
+            Result.failure(lastError ?: Exception("لم يتم استلام استجابة من خادم ADB على المنفذ $port"))
         }
     }
 

@@ -14,11 +14,12 @@ import com.bamods.adbrestore.databinding.DialogPairingBinding
 
 class PairingDialog(
     context: Context,
-    private val onPairRequested: (pairingPort: Int, pairingCode: String, connectPort: Int) -> Unit
+    private val onPairRequested: (host: String, pairingPort: Int, pairingCode: String, connectPort: Int) -> Unit
 ) : Dialog(context) {
 
     private lateinit var binding: DialogPairingBinding
     private var mdnsDiscovery: AdbMdnsDiscovery? = null
+    private var discoveredHost: String = "127.0.0.1"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,15 +33,17 @@ class PairingDialog(
 
     private fun startAutoDiscovery() {
         mdnsDiscovery = AdbMdnsDiscovery(context).apply {
-            onPairingDiscovered = { port, _ ->
+            onPairingDiscovered = { port, host ->
+                discoveredHost = host
                 binding.etPairingPort.setText(port.toString())
                 binding.pbDiscovery.visibility = View.GONE
-                binding.tvDiscoveryStatus.text = "✅ تم اكتشاف المنفذ تلقائياً: $port (أدخل رمز الـ 6 أرقام)"
+                binding.tvDiscoveryStatus.text = "✅ تم اكتشاف المنفذ تلقائياً: $port ($host)"
                 binding.cardDiscoveryStatus.setCardBackgroundColor(Color.parseColor("#1A10B981"))
                 binding.etPairingCode.requestFocus()
             }
 
-            onConnectDiscovered = { port, _ ->
+            onConnectDiscovered = { port, host ->
+                if (host.isNotEmpty()) discoveredHost = host
                 binding.etConnectPort.setText(port.toString())
             }
 
@@ -110,7 +113,7 @@ class PairingDialog(
             }
 
             dismiss()
-            onPairRequested(pairingPort, pairingCode, connectPort)
+            onPairRequested(discoveredHost, pairingPort, pairingCode, connectPort)
         }
     }
 

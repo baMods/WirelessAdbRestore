@@ -185,42 +185,45 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showPairingDialog() {
-        PairingDialog(this) { pairingPort, pairingCode, connectPort ->
-            startPairingProcess(pairingPort, pairingCode, connectPort)
+        PairingDialog(this) { host, pairingPort, pairingCode, connectPort ->
+            startPairingProcess(host, pairingPort, pairingCode, connectPort)
         }.show()
     }
 
-    private fun startPairingProcess(pairingPort: Int, pairingCode: String, connectPort: Int) {
-        setConnectionState(ConnectionState.PAIRING, "جاري الاقتران عبر المنفذ $pairingPort...")
-        appendLog("[Pairing] بدء الاقتران بالمنفذ $pairingPort مع الرمز $pairingCode...")
+    private fun startPairingProcess(host: String, pairingPort: Int, pairingCode: String, connectPort: Int) {
+        setConnectionState(ConnectionState.PAIRING, "جاري الاقتران عبر $host:$pairingPort...")
+        appendLog("[Pairing] بدء الاقتران بالهدف $host:$pairingPort مع الرمز $pairingCode...")
 
         lifecycleScope.launch {
-            val result = pairing.pair("127.0.0.1", pairingPort, pairingCode)
+            val result = pairing.pair(host, pairingPort, pairingCode) { logMsg ->
+                runOnUiThread { appendLog(logMsg) }
+            }
             if (result.isSuccess) {
                 prefs.isPaired = true
                 prefs.lastPairingPort = pairingPort
                 prefs.lastConnectPort = connectPort
                 appendLog("[Success] اكتمل الاقتران بنجاح! جاري الاتصال بالـ ADB عبر المنفذ $connectPort...")
-                connectAdb(connectPort)
+                connectAdb(connectPort, host)
             } else {
                 setConnectionState(ConnectionState.ERROR, "فشل الاقتران: ${result.exceptionOrNull()?.message}")
                 appendLog("[Error] فشل الاقتران: ${result.exceptionOrNull()?.localizedMessage}")
+                appendLog("[Tip] تنبيه هام: يجب إبقاء نافذة رمز الاقتران في خيارات المطور مفتوحة على الشاشة أثناء إدخال الرمز، لأن أندرويد يلغي الجلسة بمجرد إغلاق النافذة.")
             }
         }
     }
 
-    private fun connectAdb(port: Int) {
+    private fun connectAdb(port: Int, host: String = "127.0.0.1") {
         setConnectionState(ConnectionState.CONNECTING, "جاري الاتصال بـ ADB (Port: $port)...")
-        appendLog("[ADB] محاولة الاتصال بـ 127.0.0.1:$port...")
+        appendLog("[ADB] محاولة الاتصال بـ $host:$port...")
 
         lifecycleScope.launch {
-            val result = adbConnection.connect("127.0.0.1", port, useTls = true)
+            val result = adbConnection.connect(host, port, useTls = true)
             if (result.isSuccess) {
                 setConnectionState(ConnectionState.CONNECTED, "متصل بـ ADB بنجاح (Port: $port)")
                 appendLog("[Success] تم الاتصال بخادم ADB الداخلي بنجاح! جاهز لتنفيذ الأوامر.")
             } else {
                 // Try non-TLS fallback
-                val fallback = adbConnection.connect("127.0.0.1", port, useTls = false)
+                val fallback = adbConnection.connect(host, port, useTls = false)
                 if (fallback.isSuccess) {
                     setConnectionState(ConnectionState.CONNECTED, "متصل بـ ADB (Normal Mode)")
                     appendLog("[Success] تم الاتصال بخادم ADB بنجاح.")

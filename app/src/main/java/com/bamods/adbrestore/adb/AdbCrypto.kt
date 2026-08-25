@@ -11,7 +11,6 @@ import java.security.*
 import java.security.cert.X509Certificate
 import java.security.spec.PKCS8EncodedKeySpec
 import java.util.*
-import javax.net.ssl.KeyManager
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
@@ -94,7 +93,11 @@ class AdbCrypto(private val context: Context) {
             override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
         })
 
-        val sslContext = SSLContext.getInstance("TLS")
+        val sslContext = try {
+            SSLContext.getInstance("TLSv1.3")
+        } catch (e: Exception) {
+            SSLContext.getInstance("TLS")
+        }
         sslContext.init(kmf.keyManagers, trustAll, SecureRandom())
         return sslContext
     }
