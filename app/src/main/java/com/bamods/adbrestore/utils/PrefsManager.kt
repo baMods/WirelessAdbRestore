@@ -28,4 +28,8 @@ class PrefsManager(context: Context) {
     var isPaired: Boolean
         get() = prefs.getBoolean(KEY_IS_PAIRED, false)
         set(value) = prefs.edit().putBoolean(KEY_IS_PAIRED, value).apply()
+
+    var lastHost: String
+        get() = prefs.getString("last_host", "127.0.0.1") ?: "127.0.0.1"
+        set(value) = prefs.edit().putString("last_host", value).apply()
 }
