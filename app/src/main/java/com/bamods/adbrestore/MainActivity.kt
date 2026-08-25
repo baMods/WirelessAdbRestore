@@ -229,9 +229,14 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val target = "$host:$port"
-                val process = ProcessBuilder(adbPath, "connect", target)
-                    .redirectErrorStream(true)
-                    .start()
+                val processBuilder = ProcessBuilder(adbPath, "connect", target)
+                processBuilder.environment().apply {
+                    put("HOME", filesDir.absolutePath)
+                    put("ADB_VENDOR_KEYS", filesDir.absolutePath)
+                    put("USER", "WARestore")
+                    put("HOSTNAME", "WhatsApp_Tool")
+                }
+                val process = processBuilder.redirectErrorStream(true).start()
 
                 val output = process.inputStream.bufferedReader().use { it.readText() }
                 process.waitFor()
@@ -243,7 +248,12 @@ class MainActivity : AppCompatActivity() {
                         setConnectionState(ConnectionState.CONNECTED, getString(R.string.status_connected, android.os.Build.MODEL))
                     } else {
                         setConnectionState(ConnectionState.DISCONNECTED, getString(R.string.status_disconnected))
-                        Toast.makeText(this@MainActivity, "فشل الاتصال", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@MainActivity, "فشل الاتصال، تأكد من تفعيل تصحيح الأخطاء اللاسلكي", Toast.LENGTH_LONG).show()
+                        try {
+                            val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            startActivity(intent)
+                        } catch (e: Exception) {}
                     }
                 }
             } catch (e: Exception) {
@@ -383,9 +393,12 @@ class MainActivity : AppCompatActivity() {
     private fun executeAdbCommand(cmd: String) {
         try {
             val target = "${prefs.lastHost}:${prefs.lastConnectPort}"
-            val process = ProcessBuilder("sh", "-c", "$adbPath -s $target shell \"$cmd\"")
-                .redirectErrorStream(true)
-                .start()
+            val processBuilder = ProcessBuilder("sh", "-c", "$adbPath -s $target shell \"$cmd\"")
+            processBuilder.environment().apply {
+                put("HOME", filesDir.absolutePath)
+                put("ADB_VENDOR_KEYS", filesDir.absolutePath)
+            }
+            val process = processBuilder.redirectErrorStream(true).start()
             process.waitFor()
         } catch (e: Exception) {
             e.printStackTrace()

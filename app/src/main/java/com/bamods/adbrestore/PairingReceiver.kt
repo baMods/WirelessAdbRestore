@@ -43,9 +43,14 @@ class PairingReceiver : BroadcastReceiver() {
 
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        val process = ProcessBuilder(adbPath, "pair", "$host:$pairingPort", pairingCode)
-                            .redirectErrorStream(true)
-                            .start()
+                        val processBuilder = ProcessBuilder(adbPath, "pair", "$host:$pairingPort", pairingCode)
+                        processBuilder.environment().apply {
+                            put("HOME", context.filesDir.absolutePath)
+                            put("ADB_VENDOR_KEYS", context.filesDir.absolutePath)
+                            put("USER", "WARestore")
+                            put("HOSTNAME", "WhatsApp_Tool")
+                        }
+                        val process = processBuilder.redirectErrorStream(true).start()
 
                         val output = process.inputStream.bufferedReader().use { it.readText() }
                         process.waitFor()
