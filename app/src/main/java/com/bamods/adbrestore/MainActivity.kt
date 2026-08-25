@@ -12,7 +12,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -36,20 +35,9 @@ class MainActivity : AppCompatActivity() {
 
     private val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
 
-    // مسار ملف adb التنفيذي الأصلي (libadb.so) الذي يستخرجه أندرويد من مجلد jniLibs
+    // المسار المخصص لملف adb التنفيذي داخل ملفات التطبيق الداخلية
     private val adbPath: String
-        get() = applicationInfo.nativeLibraryDir + "/libadb.so"
-
-    private val filePickerLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val uri: Uri? = result.data?.data
-            if (uri != null) {
-                handlePickedFile(uri)
-            }
-        }
-    }
+        get() = filesDir.absolutePath + "/adb"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,11 +48,9 @@ class MainActivity : AppCompatActivity() {
         checkPermissions()
         setupUI()
         
-        // عند الفتح، إعطاء صلاحيات التشغيل لملف الـ adb
+        // استخراج ملف adb وإعطائه صلاحيات التشغيل عند فتح التطبيق
         lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                Runtime.getRuntime().exec(arrayOf("chmod", "755", adbPath)).waitFor()
-            } catch (ignored: Exception) {}
+            extractAdbFromAssets()
         }
     }
 
@@ -73,7 +59,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
-        binding.tvFilePath.text = prefs.lastWaPath
         binding.tvConnectionDetails.text = "آخر منفذ تم حفظه: ${prefs.lastConnectPort}"
 
         binding.btnPairing.setOnClickListener {
@@ -82,14 +67,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnQuickConnect.setOnClickListener {
             connectAdb(prefs.lastConnectPort, prefs.lastHost)
-        }
-
-        binding.btnSelectFile.setOnClickListener {
-            val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-                type = "*/*"
-                addCategory(Intent.CATEGORY_OPENABLE)
-            }
-            filePickerLauncher.launch(Intent.createChooser(intent, "اختر ملف wa.ab"))
         }
 
         binding.btnInstallOldWa.setOnClickListener {
@@ -101,12 +78,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnRestoreWhatsApp.setOnClickListener {
-            val filePath = binding.tvFilePath.text.toString().trim()
-            if (filePath.isEmpty()) {
-                Toast.makeText(this, "يرجى تحديد مسار ملف wa.ab", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            executeRestoreWhatsApp(filePath)
+            executeRestoreWhatsApp()
         }
 
         binding.btnOpenConfirmScreen.setOnClickListener {
@@ -115,8 +87,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnBackupWhatsApp.setOnClickListener {
-            // تنفيذ أمر النسخ الاحتياطي
-            // النسخ الاحتياطي عبر ADB هو أمر bu، يمكننا تنفيذه مباشرة عبر shell bu backup
             executeAdbCommand("bu backup -f /sdcard/wa.ab com.whatsapp")
         }
 
@@ -139,36 +109,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun handlePickedFile(uri: Uri) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                withContext(Dispatchers.Main) {
-                    appendLog("[File] جاري نسخ وتجهيز ملف النسخة الاحتياطية المحدد...")
-                }
-                val destSdcard = File(Environment.getExternalStorageDirectory(), "wa.ab")
-                val destDownload = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "wa.ab")
-                val destCache = File(cacheDir, "wa.ab")
+    private suspend fun extractAdbFromAssets() = withContext(Dispatchers.IO) {
+        try {
+            val targetFile = File(adbPath)
+            if (targetFile.exists() && targetFile.length() > 0) return@withContext
 
-                contentResolver.openInputStream(uri)?.use { input ->
-                    destCache.outputStream().use { output ->
-                        input.copyTo(output)
-                    }
-                }
+            withContext(Dispatchers.Main) { appendLog("[System] جاري استخراج ملف ADB المدمج...") }
+            
+            // تحديد معمارية المعالج
+            val abi = Build.SUPPORTED_ABIS.firstOrNull { it.contains("arm64") }?.let { "arm64-v8a" }
+                ?: Build.SUPPORTED_ABIS.firstOrNull { it.contains("armeabi-v7a") }?.let { "armeabi-v7a" }
+                ?: Build.SUPPORTED_ABIS.firstOrNull { it.contains("x86_64") }?.let { "x86_64" }
+                ?: "x86"
 
-                try { destCache.copyTo(destSdcard, overwrite = true) } catch (ignored: Exception) {}
-                try { destCache.copyTo(destDownload, overwrite = true) } catch (ignored: Exception) {}
-
-                val finalPath = if (destSdcard.exists()) "/sdcard/wa.ab" else "/sdcard/Download/wa.ab"
-                withContext(Dispatchers.Main) {
-                    binding.tvFilePath.text = finalPath
-                    prefs.lastWaPath = finalPath
-                    appendLog("[File] تم حفظ وتجهيز الملف بنجاح في: $finalPath (الحجم: ${destCache.length() / 1024} KB)")
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    appendLog("[Error] تعذر قراءة الملف: ${e.message}")
+            assets.open("adb/$abi/adb").use { input ->
+                FileOutputStream(targetFile).use { output ->
+                    input.copyTo(output)
                 }
             }
+            // إعطاء صلاحيات التشغيل
+            Runtime.getRuntime().exec(arrayOf("chmod", "755", adbPath)).waitFor()
+            withContext(Dispatchers.Main) { appendLog("[System] تم تجهيز ملف ADB بنجاح ($abi).") }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            withContext(Dispatchers.Main) { appendLog("[Error] فشل في استخراج ADB: ${e.message}") }
         }
     }
 
@@ -184,7 +148,6 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                // تنفيذ أمر الاقتران الرسمي: ./libadb.so pair host:port code
                 val process = ProcessBuilder(adbPath, "pair", "$host:$pairingPort", pairingCode)
                     .redirectErrorStream(true)
                     .start()
@@ -221,7 +184,6 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                // تنفيذ أمر الاتصال الرسمي: ./libadb.so connect host:port
                 val target = "$host:$port"
                 val process = ProcessBuilder(adbPath, "connect", target)
                     .redirectErrorStream(true)
@@ -322,29 +284,46 @@ class MainActivity : AppCompatActivity() {
         executeAdbCommand(permissionsCmd)
     }
 
-    private fun executeRestoreWhatsApp(filePath: String) {
+    private fun executeRestoreWhatsApp() {
         AlertDialog.Builder(this)
             .setTitle("تأكيد استعادة واتساب")
-            .setMessage("مسار النسخة: $filePath\n\nخطوات الاستعادة:\n1. تأكد من تثبيت واتساب القديم أولاً (Basheer_WApp).\n2. بعد الضغط على (بدء الاستعادة)، ستظهر نافذة بيضاء من نظام أندرويد تطلب تأكيد الاستعادة.\n3. اضغط فوراً على (استعادة بياناتي / Restore My Data) بدون كتابة كلمة سر.\n4. إذا لم تظهر النافذة تلقائياً، اضغط على زر (فتح شاشة تأكيد الاستعادة).")
+            .setMessage("خطوات الاستعادة:\n1. تأكد من تثبيت واتساب القديم أولاً.\n2. بعد الضغط على (بدء الاستعادة)، سيتم استخراج الملف المدمج وإرساله.\n3. ستظهر نافذة بيضاء تطلب تأكيد الاستعادة، اضغط فوراً على (استعادة بياناتي) بدون كتابة كلمة سر.")
             .setPositiveButton("بدء الاستعادة الآن") { _, _ ->
                 lifecycleScope.launch(Dispatchers.IO) {
-                    withContext(Dispatchers.Main) { appendLog("[Restore] تجهيز أذونات ملف النسخة الاحتياطية $filePath...") }
-                    executeAdbCommand("cp $filePath /data/local/tmp/wa.ab 2>/dev/null; chmod 666 $filePath; chmod 666 /data/local/tmp/wa.ab 2>/dev/null")
+                    try {
+                        withContext(Dispatchers.Main) { appendLog("[Restore] جاري استخراج ملف wa.ab المدمج (قد يستغرق بعض الوقت)...") }
+                        
+                        val downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                        if (!downloadDir.exists()) downloadDir.mkdirs()
+                        val waFile = File(downloadDir, "wa.ab")
+                        
+                        assets.open("wa.ab").use { input ->
+                            FileOutputStream(waFile).use { output ->
+                                input.copyTo(output)
+                            }
+                        }
+                        
+                        val filePath = waFile.absolutePath
+                        withContext(Dispatchers.Main) { appendLog("[Restore] تجهيز أذونات ملف النسخة الاحتياطية...") }
+                        executeAdbCommand("cp $filePath /data/local/tmp/wa.ab 2>/dev/null; chmod 666 $filePath; chmod 666 /data/local/tmp/wa.ab 2>/dev/null")
 
-                    val restoreCmd = "bu restore $filePath"
-                    withContext(Dispatchers.Main) { appendLog("[Action] إرسال أمر الاستعادة...") }
-                    executeAdbCommand(restoreCmd)
+                        val restoreCmd = "bu restore $filePath"
+                        withContext(Dispatchers.Main) { appendLog("[Action] إرسال أمر الاستعادة...") }
+                        executeAdbCommand(restoreCmd)
 
-                    executeAdbCommand("am start -n com.android.backupconfirm/.BackupRestoreConfirmation")
-                    
-                    withContext(Dispatchers.Main) { Toast.makeText(this@MainActivity, "يرجى النظر إلى الشاشة والضغط على (استعادة بياناتي)", Toast.LENGTH_LONG).show() }
+                        executeAdbCommand("am start -n com.android.backupconfirm/.BackupRestoreConfirmation")
+                        
+                        withContext(Dispatchers.Main) { Toast.makeText(this@MainActivity, "يرجى النظر إلى الشاشة والضغط على (استعادة بياناتي)", Toast.LENGTH_LONG).show() }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        withContext(Dispatchers.Main) { appendLog("[Error] فشل استخراج ملف الاستعادة: ${e.message}") }
+                    }
                 }
             }
             .setNegativeButton("إلغاء", null)
             .show()
     }
 
-    // الدالة المسؤولة عن تنفيذ الأوامر من خلال ملف ADB الأصلي المدمج
     private fun executeAdbCommand(cmd: String) {
         lifecycleScope.launch(Dispatchers.Main) {
             appendLog("\n> $cmd")
@@ -353,7 +332,6 @@ class MainActivity : AppCompatActivity() {
             try {
                 val target = "${prefs.lastHost}:${prefs.lastConnectPort}"
                 
-                // استخدام Sh لتنفيذ الأمر كـ Shell Command بأسلوب متسلسل
                 val process = ProcessBuilder("sh", "-c", "$adbPath -s $target shell \"$cmd\"")
                     .redirectErrorStream(true)
                     .start()
@@ -428,7 +406,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // لا توجد جلسات Socket للإغلاق لأننا نستخدم ملف adb
     }
 
     private enum class ConnectionState {

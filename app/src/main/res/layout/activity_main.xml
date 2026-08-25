@@ -6,56 +6,64 @@
     android:layout_height="match_parent"
     android:background="@color/bg_dark">
 
+    <!-- AppBar with modern gradient or color -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_dark"
+        app:elevation="0dp">
+
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:contentInsetStart="16dp">
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_vertical">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textColor="@color/text_primary"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_subtitle"
+                    android:textColor="@color/primary_light"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
-
-            <!-- App Header -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:layout_marginBottom="14dp">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/app_name"
-                        android:textColor="@color/text_primary"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/app_subtitle"
-                        android:textColor="@color/primary_light"
-                        android:textSize="13sp" />
-                </LinearLayout>
-            </LinearLayout>
+            android:padding="16dp"
+            android:clipToPadding="false"
+            android:paddingBottom="40dp">
 
             <!-- 1. Connection Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
+                android:layout_marginBottom="16dp"
                 app:cardBackgroundColor="@color/surface_dark"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="4dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
                 app:strokeColor="@color/surface_card"
                 app:strokeWidth="1dp">
 
@@ -63,30 +71,29 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/step_connection_title"
                         android:textColor="@color/primary_light"
-                        android:textSize="15sp"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="12dp"
                         android:orientation="horizontal">
 
-                        <!-- Status Dot -->
                         <View
                             android:id="@+id/viewStatusDot"
-                            android:layout_width="12dp"
-                            android:layout_height="12dp"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
                             android:background="@drawable/shape_dot_disconnected"
-                            android:layout_marginEnd="8dp" />
+                            android:layout_marginEnd="10dp" />
 
                         <TextView
                             android:id="@+id/tvStatus"
@@ -95,7 +102,7 @@
                             android:layout_weight="1"
                             android:text="@string/status_disconnected"
                             android:textColor="@color/text_primary"
-                            android:textSize="14sp"
+                            android:textSize="15sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -106,38 +113,40 @@
                         android:layout_marginTop="4dp"
                         android:text="Port: Not connected"
                         android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
+                        android:textSize="13sp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="16dp"
                         android:orientation="horizontal">
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnPairing"
                             android:layout_width="0dp"
-                            android:layout_height="48dp"
+                            android:layout_height="52dp"
                             android:layout_weight="1"
-                            android:layout_marginEnd="6dp"
+                            android:layout_marginEnd="8dp"
                             android:backgroundTint="@color/primary"
                             android:text="@string/btn_pair"
                             android:textColor="#FFFFFF"
-                            android:textSize="13sp"
-                            app:cornerRadius="10dp" />
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            app:cornerRadius="12dp" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnQuickConnect"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
-                            android:layout_height="48dp"
+                            android:layout_height="52dp"
                             android:layout_weight="1"
-                            android:layout_marginStart="6dp"
+                            android:layout_marginStart="8dp"
                             android:text="@string/btn_connect"
                             android:textColor="@color/primary_light"
-                            android:textSize="13sp"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
                             app:strokeColor="@color/primary_light"
-                            app:cornerRadius="10dp" />
+                            app:cornerRadius="12dp" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -147,10 +156,10 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
+                android:layout_marginBottom="16dp"
                 app:cardBackgroundColor="@color/surface_dark"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="4dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
                 app:strokeColor="@color/surface_card"
                 app:strokeWidth="1dp">
 
@@ -158,50 +167,48 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/step_install_title"
                         android:textColor="@color/primary_light"
-                        android:textSize="15sp"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:text="تثبيت نسخة واتساب القديمة المدمجة (Basheer_WApp) التي تتيح استعادة النسخة الاحتياطية. يدعم التثبيت الإجباري لأندرويد 10 وتحت، وأندرويد 14+ (تجاوز حظر SDK القديم)."
+                        android:layout_marginTop="8dp"
+                        android:text="تثبيت نسخة واتساب القديمة المدمجة (Basheer_WApp). يدعم التثبيت الإجباري لجميع الإصدارات بدون فقدان البيانات."
                         android:textColor="@color/text_secondary"
-                        android:textSize="12sp"
-                        android:lineSpacingExtra="2dp" />
+                        android:textSize="13sp"
+                        android:lineSpacingExtra="4dp" />
 
-                    <!-- Install Old WhatsApp Button -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnInstallOldWa"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginTop="12dp"
-                        android:backgroundTint="#059669"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="16dp"
+                        android:backgroundTint="@color/accent"
                         android:text="@string/btn_install_old_wa"
                         android:textColor="#FFFFFF"
-                        android:textSize="14sp"
+                        android:textSize="15sp"
                         android:textStyle="bold"
-                        app:cornerRadius="10dp" />
+                        app:cornerRadius="12dp" />
 
-                    <!-- Grant Permissions Button -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnGrantPermissions"
                         style="@style/Widget.Material3.Button.OutlinedButton"
                         android:layout_width="match_parent"
-                        android:layout_height="44dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="10dp"
                         android:text="@string/btn_grant_permissions"
                         android:textColor="@color/text_primary"
-                        android:textSize="13sp"
+                        android:textSize="14sp"
                         app:strokeColor="@color/text_muted"
-                        app:cornerRadius="10dp" />
+                        app:cornerRadius="12dp" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -210,10 +217,10 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
+                android:layout_marginBottom="16dp"
                 app:cardBackgroundColor="@color/surface_dark"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="4dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
                 app:strokeColor="@color/surface_card"
                 app:strokeWidth="1dp">
 
@@ -221,103 +228,97 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/step_restore_title"
                         android:textColor="@color/primary_light"
-                        android:textSize="15sp"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
-                    <!-- File Path Box -->
+                    <!-- Status Box -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@color/surface_card"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/shape_embedded_file_bg"
                         android:orientation="horizontal"
-                        android:padding="10dp"
+                        android:padding="12dp"
                         android:gravity="center_vertical">
 
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@android:drawable/ic_menu_save"
+                            app:tint="@color/primary_light"
+                            android:layout_marginEnd="10dp"/>
+
                         <TextView
-                            android:id="@+id/tvFilePath"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="@string/default_wa_path"
+                            android:text="تم تضمين ملف النسخة الاحتياطية (wa.ab) بنجاح وجاهز للاستعادة."
                             android:textColor="@color/text_primary"
-                            android:textSize="13sp"
-                            android:fontFamily="monospace" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnSelectFile"
-                            style="@style/Widget.Material3.Button.TextButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="تغيير / اختيار"
-                            android:textColor="@color/primary_light" />
+                            android:textSize="13sp" />
                     </LinearLayout>
 
-                    <!-- Restore Button -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnRestoreWhatsApp"
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:layout_marginTop="14dp"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="16dp"
                         android:backgroundTint="@color/primary_dark"
                         android:text="@string/btn_restore_wa"
                         android:textColor="#FFFFFF"
                         android:textSize="15sp"
                         android:textStyle="bold"
-                        app:cornerRadius="10dp" />
+                        app:cornerRadius="12dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="10dp"
                         android:orientation="horizontal">
 
-                        <!-- Open Confirm Screen Button -->
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnOpenConfirmScreen"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
-                            android:layout_height="44dp"
+                            android:layout_height="50dp"
                             android:layout_weight="1"
-                            android:layout_marginEnd="4dp"
+                            android:layout_marginEnd="6dp"
                             android:text="@string/btn_open_confirm_screen"
                             android:textColor="@color/text_primary"
-                            android:textSize="12sp"
+                            android:textSize="13sp"
                             app:strokeColor="@color/text_muted"
-                            app:cornerRadius="10dp" />
+                            app:cornerRadius="12dp" />
 
-                        <!-- Backup Button -->
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnBackupWhatsApp"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
-                            android:layout_height="44dp"
+                            android:layout_height="50dp"
                             android:layout_weight="1"
-                            android:layout_marginStart="4dp"
+                            android:layout_marginStart="6dp"
                             android:text="@string/btn_backup_wa"
                             android:textColor="@color/text_primary"
-                            android:textSize="12sp"
+                            android:textSize="13sp"
                             app:strokeColor="@color/text_muted"
-                            app:cornerRadius="10dp" />
+                            app:cornerRadius="12dp" />
                     </LinearLayout>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- 4. Custom Command & Terminal Card -->
+            <!-- 4. Terminal Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@color/surface_dark"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="4dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
                 app:strokeColor="@color/surface_card"
                 app:strokeWidth="1dp">
 
@@ -325,21 +326,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/terminal_title"
                         android:textColor="@color/primary_light"
-                        android:textSize="15sp"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <!-- Custom Command Input -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="12dp"
                         android:orientation="horizontal"
                         android:gravity="center_vertical">
 
@@ -350,7 +351,11 @@
                             android:hint="@string/hint_custom_cmd"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             app:boxStrokeColor="@color/primary"
-                            app:hintTextColor="@color/primary">
+                            app:hintTextColor="@color/primary"
+                            app:boxCornerRadiusTopStart="12dp"
+                            app:boxCornerRadiusTopEnd="12dp"
+                            app:boxCornerRadiusBottomStart="12dp"
+                            app:boxCornerRadiusBottomEnd="12dp">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/etCustomCommand"
@@ -358,72 +363,81 @@
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/text_primary"
                                 android:fontFamily="monospace"
-                                android:textSize="13sp"
+                                android:textSize="14sp"
                                 android:maxLines="1" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnRunCommand"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
+                            android:layout_height="56dp"
+                            android:layout_marginStart="10dp"
                             android:backgroundTint="@color/primary"
                             android:text="@string/btn_run_cmd"
                             android:textColor="#FFFFFF"
-                            app:cornerRadius="8dp" />
+                            android:textStyle="bold"
+                            app:cornerRadius="12dp" />
                     </LinearLayout>
 
                     <!-- Terminal Output Box -->
-                    <LinearLayout
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
-                        android:layout_height="220dp"
-                        android:layout_marginTop="12dp"
-                        android:background="@color/terminal_bg"
-                        android:orientation="vertical"
-                        android:padding="8dp">
+                        android:layout_height="250dp"
+                        android:layout_marginTop="16dp"
+                        app:cardBackgroundColor="@color/terminal_bg"
+                        app:cardCornerRadius="12dp"
+                        app:strokeWidth="0dp">
 
-                        <ScrollView
-                            android:id="@+id/svTerminal"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="1">
-
-                            <TextView
-                                android:id="@+id/tvTerminalLogs"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="monospace"
-                                android:text="[Ready] التطبيق جاهز. اضغط على 'اقتران لاسلكي (اكتشاف تلقائي)' للبدء...\n"
-                                android:textColor="@color/terminal_text"
-                                android:textSize="12sp" />
-                        </ScrollView>
-
-                        <!-- Terminal Actions -->
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="end"
-                            android:orientation="horizontal">
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:padding="12dp">
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnClearLogs"
-                                style="@style/Widget.Material3.Button.TextButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="36dp"
-                                android:text="@string/btn_clear_logs"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="11sp" />
+                            <ScrollView
+                                android:id="@+id/svTerminal"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1">
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnCopyLogs"
-                                style="@style/Widget.Material3.Button.TextButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="36dp"
-                                android:text="@string/btn_copy_logs"
-                                android:textColor="@color/primary_light"
-                                android:textSize="11sp" />
+                                <TextView
+                                    android:id="@+id/tvTerminalLogs"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="monospace"
+                                    android:text="[Ready] التطبيق جاهز. الواجهة الجديدة تعمل بنجاح...\n"
+                                    android:textColor="@color/terminal_text"
+                                    android:textSize="13sp" />
+                            </ScrollView>
+
+                            <!-- Terminal Actions -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:orientation="horizontal"
+                                android:layout_marginTop="4dp">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnClearLogs"
+                                    style="@style/Widget.Material3.Button.TextButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:text="@string/btn_clear_logs"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnCopyLogs"
+                                    style="@style/Widget.Material3.Button.TextButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:text="@string/btn_copy_logs"
+                                    android:textColor="@color/primary_light"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
                         </LinearLayout>
-                    </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
