@@ -17,11 +17,15 @@
     <string name="btn_restore_wa">استعادة البيانات</string>
     
     <string name="follow_me">تابعني على:</string>
+    <string name="android_11_support">يدعم أندرويد 11 وأعلى فقط</string>
     
-    <!-- Pairing Dialog Strings -->
-    <string name="dialog_pairing_title">إقران الجهاز</string>
-    <string name="hint_pairing_port">منفذ الاقتران</string>
-    <string name="hint_connect_port">منفذ الاتصال</string>
-    <string name="dialog_cancel">إلغاء</string>
-    <string name="dialog_confirm_pair">اقتران</string>
+    <!-- Notification Pairing Strings -->
+    <string name="notif_pairing_title">الاقتران اللاسلكي</string>
+    <string name="notif_pairing_desc">قم بتوسيع هذا الإشعار واضغط (إدخال الرمز) لكتابة رمز الاقتران.</string>
+    <string name="notif_pairing_progress">جاري الاقتران...</string>
+    <string name="notif_pairing_success">تم الاقتران بنجاح! يمكنك الاتصال الآن.</string>
+    <string name="notif_pairing_failed">فشل الاقتران. تأكد من الرمز.</string>
+    <string name="notif_pairing_error">حدث خطأ أثناء الاقتران.</string>
+    <string name="hint_pairing_code">أدخل الرمز (6 أرقام)</string>
+    <string name="action_reply">إدخال الرمز</string>
 </resources>

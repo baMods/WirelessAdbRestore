@@ -29,6 +29,45 @@ class MainActivity : AppCompatActivity() {
     private val adbPath: String
         get() = applicationInfo.nativeLibraryDir + "/libadb.so"
 
+    private fun checkPermissions() {
+        // Request Notification Permission for Android 13+ (Required for Shizuku-style pairing)
+        if (Build.VERSION.SDK_INT >= 33) {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                androidx.core.app.ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1002)
+            }
+        }
+
+        // Request File Management Permissions
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                try {
+                    val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
+                        data = Uri.parse("package:$packageName")
+                    }
+                    startActivity(intent)
+                } catch (ignored: Exception) {}
+            }
+        } else {
+            val perms = arrayOf(
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+            val needed = perms.filter {
+                androidx.core.content.ContextCompat.checkSelfPermission(this, it) != android.content.pm.PackageManager.PERMISSION_GRANTED
+            }
+            if (needed.isNotEmpty()) {
+                androidx.core.app.ActivityCompat.requestPermissions(this, needed.toTypedArray(), 1001)
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            unregisterReceiver(pairingReceiver)
+        } catch (e: Exception) {}
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -36,7 +75,14 @@ class MainActivity : AppCompatActivity() {
 
         prefs = PrefsManager(this)
         
+        checkPermissions()
         setupUI()
+
+        if (Build.VERSION.SDK_INT >= 33) {
+            registerReceiver(pairingReceiver, android.content.IntentFilter("com.bamods.adbrestore.PAIRING_SUCCESS"), android.content.Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(pairingReceiver, android.content.IntentFilter("com.bamods.adbrestore.PAIRING_SUCCESS"))
+        }
         
         lifecycleScope.launch(Dispatchers.IO) {
             try {
@@ -45,9 +91,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val pairingReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context, intent: Intent) {
+            if (intent.action == "com.bamods.adbrestore.PAIRING_SUCCESS") {
+                Toast.makeText(this@MainActivity, getString(R.string.notif_pairing_success), Toast.LENGTH_SHORT).show()
+                connectAdb(prefs.lastConnectPort, prefs.lastHost)
+            }
+        }
+    }
+
     private fun setupUI() {
         binding.btnPairing.setOnClickListener {
-            showPairingDialog()
+            startShizukuPairing()
         }
 
         binding.btnQuickConnect.setOnClickListener {
@@ -82,41 +137,73 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showPairingDialog() {
-        PairingDialog(this) { host, pairingPort, pairingCode, connectPort ->
-            startPairingProcess(host, pairingPort, pairingCode, connectPort)
-        }.show()
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Pairing Channel"
+            val descriptionText = "Notifications for Wireless ADB Pairing"
+            val importance = android.app.NotificationManager.IMPORTANCE_HIGH
+            val channel = android.app.NotificationChannel("pairing_channel", name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager: android.app.NotificationManager =
+                getSystemService(android.content.Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
-    private fun startPairingProcess(host: String, pairingPort: Int, pairingCode: String, connectPort: Int) {
-        setConnectionState(ConnectionState.PAIRING, getString(R.string.status_disconnected))
+    private fun startShizukuPairing() {
+        createNotificationChannel()
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val process = ProcessBuilder(adbPath, "pair", "$host:$pairingPort", pairingCode)
-                    .redirectErrorStream(true)
-                    .start()
-
-                val output = process.inputStream.bufferedReader().use { it.readText() }
-                process.waitFor()
-
-                withContext(Dispatchers.Main) {
-                    if (output.contains("Successfully paired", ignoreCase = true) || output.contains("success", ignoreCase = true)) {
-                        prefs.isPaired = true
-                        prefs.lastPairingPort = pairingPort
-                        prefs.lastConnectPort = connectPort
-                        prefs.lastHost = host
-                        connectAdb(connectPort, host)
-                    } else {
-                        setConnectionState(ConnectionState.ERROR, getString(R.string.status_disconnected))
-                        Toast.makeText(this@MainActivity, "فشل الاقتران", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    setConnectionState(ConnectionState.ERROR, getString(R.string.status_disconnected))
-                }
+        // 1. Start Auto-discovery for pairing port
+        com.bamods.adbrestore.adb.AdbMdnsDiscovery(this).startDiscovery(object : com.bamods.adbrestore.adb.AdbMdnsDiscovery.DiscoveryListener {
+            override fun onServiceFound(port: Int) {
+                prefs.lastPairingPort = port
             }
+        })
+
+        // 2. Build the Notification with Direct Reply
+        val replyLabel = getString(R.string.hint_pairing_code)
+        val remoteInput: androidx.core.app.RemoteInput = androidx.core.app.RemoteInput.Builder("pairing_code_input")
+            .setLabel(replyLabel)
+            .build()
+
+        val replyPendingIntent: android.app.PendingIntent =
+            android.app.PendingIntent.getBroadcast(
+                this,
+                0,
+                Intent(this, PairingReceiver::class.java).setAction("com.bamods.adbrestore.ACTION_PAIR"),
+                android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_MUTABLE
+            )
+
+        val action: androidx.core.app.NotificationCompat.Action =
+            androidx.core.app.NotificationCompat.Action.Builder(
+                0,
+                getString(R.string.action_reply),
+                replyPendingIntent
+            )
+                .addRemoteInput(remoteInput)
+                .build()
+
+        val builder = androidx.core.app.NotificationCompat.Builder(this, "pairing_channel")
+            .setSmallIcon(R.drawable.ic_app_logo)
+            .setContentTitle(getString(R.string.notif_pairing_title))
+            .setContentText(getString(R.string.notif_pairing_desc))
+            .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
+            .addAction(action)
+            .setOngoing(true)
+            .setAutoCancel(false)
+
+        val notificationManager = getSystemService(android.content.Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+        notificationManager.notify(1001, builder.build())
+
+        // 3. Open Developer Options automatically
+        try {
+            val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+            Toast.makeText(this, "افتح خيارات الاقتران اللاسلكي وأدخل الرمز في الإشعار", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "يرجى تفعيل خيارات المطور أولاً", Toast.LENGTH_LONG).show()
         }
     }
 

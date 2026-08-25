@@ -48,6 +48,14 @@
                     android:text="@string/app_subtitle"
                     android:textColor="@color/primary"
                     android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/android_11_support"
+                    android:textColor="@color/color_text_secondary"
+                    android:textSize="11sp" />
             </LinearLayout>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>

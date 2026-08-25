@@ -17,11 +17,15 @@
     <string name="btn_restore_wa">Restore Data</string>
     
     <string name="follow_me">Follow me:</string>
+    <string name="android_11_support">Supports Android 11 and above</string>
     
-    <!-- Pairing Dialog Strings -->
-    <string name="dialog_pairing_title">Pair Device</string>
-    <string name="hint_pairing_port">Pairing Port</string>
-    <string name="hint_connect_port">Connection Port</string>
-    <string name="dialog_cancel">Cancel</string>
-    <string name="dialog_confirm_pair">Pair</string>
+    <!-- Notification Pairing Strings -->
+    <string name="notif_pairing_title">Wireless Pairing</string>
+    <string name="notif_pairing_desc">Expand this notification and click Reply to enter pairing code.</string>
+    <string name="notif_pairing_progress">Pairing in progress...</string>
+    <string name="notif_pairing_success">Successfully paired! You can connect now.</string>
+    <string name="notif_pairing_failed">Pairing failed. Check the code.</string>
+    <string name="notif_pairing_error">Error occurred during pairing.</string>
+    <string name="hint_pairing_code">Enter 6-digit code</string>
+    <string name="action_reply">Enter Code</string>
 </resources>
