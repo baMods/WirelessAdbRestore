@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="1. اضغط على (فتح خيارات المطور).\n2. فعّل (تصحيح الأخطاء اللاسلكي) ثم اضغط (اقتران الجهاز برمز الاقتران).\n3. سيتم اكتشاف المنفذ تلقائياً، أدخل فقط الرمز المكون من 6 أرقام."
+            android:text="1. اضغط على الزر لفتح خيارات المطور في شاشة منقسمة.\n2. اضغط (اقتران الجهاز برمز الاقتران).\n3. سيتم اكتشاف المنفذ تلقائياً، اكتب فقط الرمز (6 أرقام)."
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
             android:lineSpacingExtra="3dp" />
@@ -69,43 +69,26 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Open Developer Options in Split Screen -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnOpenDevSettings"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.Material3.Button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginTop="12dp"
-            android:text="⚙️ فتح خيارات المطور (Developer Options)"
-            android:textColor="@color/primary_light"
-            app:strokeColor="@color/primary_light" />
+            android:backgroundTint="@color/primary"
+            android:text="📱 فتح خيارات المطور (شاشة منقسمة)"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
+            app:cornerRadius="10dp" />
 
-        <!-- Pairing Port Input -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilPairingPort"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:hint="@string/hint_pairing_port"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:boxStrokeColor="@color/primary"
-            app:hintTextColor="@color/primary">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etPairingPort"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:textColor="@color/text_primary"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Pairing Code Input -->
+        <!-- Pairing Code Input (Prominent & Focused) -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilPairingCode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="رمز الاقتران المكون من 6 أرقام (Pairing Code)"
+            android:layout_marginTop="12dp"
+            android:hint="أدخل رمز الاقتران (6 أرقام)"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:boxStrokeColor="@color/primary"
             app:hintTextColor="@color/primary">
@@ -117,37 +100,80 @@
                 android:inputType="number"
                 android:textColor="@color/text_primary"
                 android:textStyle="bold"
-                android:textSize="18sp"
-                android:letterSpacing="0.1"
+                android:textSize="20sp"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:letterSpacing="0.2"
                 android:maxLength="6"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Connection Port Input -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilConnectPort"
+        <!-- Toggle Manual Ports Link -->
+        <TextView
+            android:id="@+id/tvToggleManualPorts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:padding="6dp"
+            android:text="إظهار / تعديل المنافذ يدوياً ▼"
+            android:textColor="@color/primary_light"
+            android:textSize="11sp" />
+
+        <!-- Hidden Manual Ports Section -->
+        <LinearLayout
+            android:id="@+id/layoutManualPorts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="@string/hint_connect_port"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:boxStrokeColor="@color/primary"
-            app:hintTextColor="@color/primary">
+            android:orientation="vertical"
+            android:visibility="gone">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etConnectPort"
+            <!-- Pairing Port Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPairingPort"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:textColor="@color/text_primary"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="6dp"
+                android:hint="@string/hint_pairing_port"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="@color/primary"
+                app:hintTextColor="@color/primary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPairingPort"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textColor="@color/text_primary"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Connection Port Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilConnectPort"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:hint="@string/hint_connect_port"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="@color/primary"
+                app:hintTextColor="@color/primary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etConnectPort"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textColor="@color/text_primary"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
 
         <!-- Action Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="16dp"
             android:gravity="end"
             android:orientation="horizontal">
 
@@ -165,7 +191,7 @@
                 style="@style/Widget.Material3.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/primary"
+                android:backgroundTint="@color/primary_dark"
                 android:text="@string/dialog_confirm_pair"
                 android:textColor="#FFFFFF" />
         </LinearLayout>
