@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WARestore Official</string>
-    <string name="app_subtitle">WhatsApp Tool Ultra</string>
+    <string name="app_subtitle">by WhatsApp Tool Ultra</string>
     
     <string name="step_connection_title">1. Device Connection</string>
     <string name="status_disconnected">Disconnected</string>
+    <string name="status_connected">Connected: %1$s</string>
     <string name="btn_pair">Pair Device</string>
     <string name="btn_connect">Connect</string>
     
     <string name="step_install_title">2. Install WhatsApp</string>
     <string name="install_desc">Install the old WhatsApp to be able to restore the backup.</string>
     <string name="btn_install_old_wa">Install Old WhatsApp</string>
+    <string name="btn_installing">Installing...</string>
     
     <string name="step_restore_title">3. Restore Data</string>
     <string name="restore_desc">Restore WhatsApp backup file.</string>
     <string name="btn_restore_wa">Restore Data</string>
+    <string name="btn_restoring">Restoring...</string>
     
     <!-- Update Dialog Strings -->
     <string name="dialog_update_title">Update Required</string>
@@ -23,9 +26,11 @@
     
     <string name="follow_me">Follow me:</string>
     <string name="android_11_support">Supports Android 11 and above</string>
+    <string name="splash_desc">The most powerful tool to unban and solve WhatsApp problems</string>
     
     <!-- Notification Pairing Strings -->
     <string name="notif_pairing_title">Wireless Pairing</string>
+    <string name="notif_searching_desc">Searching for pairing code...</string>
     <string name="notif_pairing_desc">Expand this notification and click Reply to enter pairing code.</string>
     <string name="notif_pairing_progress">Pairing in progress...</string>
     <string name="notif_pairing_success">Successfully paired! You can connect now.</string>

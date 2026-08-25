@@ -33,7 +33,7 @@ class PairingReceiver : BroadcastReceiver() {
                 
                 // Show "Pairing in progress" notification
                 val builder = NotificationCompat.Builder(context, "pairing_channel")
-                    .setSmallIcon(R.drawable.ic_app_logo)
+                    .setSmallIcon(R.drawable.ic_app_logo_png)
                     .setContentTitle(context.getString(R.string.notif_pairing_title))
                     .setContentText(context.getString(R.string.notif_pairing_progress))
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -51,7 +51,7 @@ class PairingReceiver : BroadcastReceiver() {
                         process.waitFor()
 
                         withContext(Dispatchers.Main) {
-                            if (output.contains("Successfully paired", ignoreCase = true) || output.contains("success", ignoreCase = true)) {
+                            if (output.contains("Successfully paired", ignoreCase = true) && !output.contains("failed", ignoreCase = true)) {
                                 prefs.isPaired = true
                                 
                                 builder.setContentText(context.getString(R.string.notif_pairing_success))

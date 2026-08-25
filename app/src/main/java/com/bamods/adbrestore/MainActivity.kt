@@ -153,54 +153,71 @@ class MainActivity : AppCompatActivity() {
     private fun startShizukuPairing() {
         createNotificationChannel()
 
-        // 1. Start Auto-discovery for pairing port
-        val mdns = com.bamods.adbrestore.adb.AdbMdnsDiscovery(this)
-        mdns.onPairingDiscovered = { port, _ ->
-            prefs.lastPairingPort = port
-        }
-        mdns.startDiscovery()
-
-        // 2. Build the Notification with Direct Reply
-        val replyLabel = getString(R.string.hint_pairing_code)
-        val remoteInput: androidx.core.app.RemoteInput = androidx.core.app.RemoteInput.Builder("pairing_code_input")
-            .setLabel(replyLabel)
-            .build()
-
-        val replyPendingIntent: android.app.PendingIntent =
-            android.app.PendingIntent.getBroadcast(
-                this,
-                0,
-                Intent(this, PairingReceiver::class.java).setAction("com.bamods.adbrestore.ACTION_PAIR"),
-                android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_MUTABLE
-            )
-
-        val action: androidx.core.app.NotificationCompat.Action =
-            androidx.core.app.NotificationCompat.Action.Builder(
-                0,
-                getString(R.string.action_reply),
-                replyPendingIntent
-            )
-                .addRemoteInput(remoteInput)
-                .build()
-
-        val builder = androidx.core.app.NotificationCompat.Builder(this, "pairing_channel")
-            .setSmallIcon(R.drawable.ic_app_logo)
+        // 1. Initial notification: Searching...
+        val notificationManager = getSystemService(android.content.Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+        var builder = androidx.core.app.NotificationCompat.Builder(this, "pairing_channel")
+            .setSmallIcon(R.drawable.ic_app_logo_png)
             .setContentTitle(getString(R.string.notif_pairing_title))
-            .setContentText(getString(R.string.notif_pairing_desc))
+            .setContentText(getString(R.string.notif_searching_desc))
             .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
-            .addAction(action)
             .setOngoing(true)
             .setAutoCancel(false)
 
-        val notificationManager = getSystemService(android.content.Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
         notificationManager.notify(1001, builder.build())
 
-        // 3. Open Developer Options automatically
+        // 2. Start Auto-discovery for pairing port
+        val mdns = com.bamods.adbrestore.adb.AdbMdnsDiscovery(this)
+        mdns.onPairingDiscovered = { port, _ ->
+            prefs.lastPairingPort = port
+            
+            // 3. Update notification with Direct Reply once found
+            val replyLabel = getString(R.string.hint_pairing_code)
+            val remoteInput: androidx.core.app.RemoteInput = androidx.core.app.RemoteInput.Builder("pairing_code_input")
+                .setLabel(replyLabel)
+                .build()
+
+            val replyPendingIntent: android.app.PendingIntent =
+                android.app.PendingIntent.getBroadcast(
+                    this,
+                    0,
+                    Intent(this, PairingReceiver::class.java).setAction("com.bamods.adbrestore.ACTION_PAIR"),
+                    android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_MUTABLE
+                )
+
+            val action: androidx.core.app.NotificationCompat.Action =
+                androidx.core.app.NotificationCompat.Action.Builder(
+                    0,
+                    getString(R.string.action_reply),
+                    replyPendingIntent
+                )
+                    .addRemoteInput(remoteInput)
+                    .build()
+
+            builder = androidx.core.app.NotificationCompat.Builder(this, "pairing_channel")
+                .setSmallIcon(R.drawable.ic_app_logo_png)
+                .setContentTitle(getString(R.string.notif_pairing_title))
+                .setContentText(getString(R.string.notif_pairing_desc))
+                .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
+                .addAction(action)
+                .setOngoing(true)
+                .setAutoCancel(false)
+
+            notificationManager.notify(1001, builder.build())
+        }
+        
+        mdns.onConnectDiscovered = { port, host ->
+            prefs.lastConnectPort = port
+            prefs.lastHost = host
+        }
+        
+        mdns.startDiscovery()
+
+        // 4. Open Developer Options automatically
         try {
             val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
-            Toast.makeText(this, "افتح خيارات الاقتران اللاسلكي وأدخل الرمز في الإشعار", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "افتح خيارات الاقتران اللاسلكي من خيارات المطور", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
             Toast.makeText(this, "يرجى تفعيل خيارات المطور أولاً", Toast.LENGTH_LONG).show()
         }
@@ -223,7 +240,7 @@ class MainActivity : AppCompatActivity() {
                     if (output.contains("connected to", ignoreCase = true) || output.contains("already connected", ignoreCase = true)) {
                         prefs.lastConnectPort = port
                         prefs.lastHost = host
-                        setConnectionState(ConnectionState.CONNECTED, "Connected")
+                        setConnectionState(ConnectionState.CONNECTED, getString(R.string.status_connected, android.os.Build.MODEL))
                     } else {
                         setConnectionState(ConnectionState.DISCONNECTED, getString(R.string.status_disconnected))
                         Toast.makeText(this@MainActivity, "فشل الاتصال", Toast.LENGTH_SHORT).show()
@@ -238,10 +255,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun installOldWhatsApp() {
+        binding.btnInstallOldWa.text = getString(R.string.btn_installing)
+        binding.btnInstallOldWa.isEnabled = false
+
         lifecycleScope.launch(Dispatchers.IO) {
             val apkFile = extractApkFromAssets()
             if (apkFile == null || !apkFile.exists()) {
-                withContext(Dispatchers.Main) { Toast.makeText(this@MainActivity, "خطأ في الاستخراج", Toast.LENGTH_SHORT).show() }
+                withContext(Dispatchers.Main) { 
+                    Toast.makeText(this@MainActivity, "خطأ في الاستخراج", Toast.LENGTH_SHORT).show()
+                    binding.btnInstallOldWa.text = getString(R.string.btn_install_old_wa)
+                    binding.btnInstallOldWa.isEnabled = true
+                }
                 return@launch
             }
 
@@ -258,6 +282,8 @@ class MainActivity : AppCompatActivity() {
             
             withContext(Dispatchers.Main) {
                 Toast.makeText(this@MainActivity, "تم الانتهاء من التثبيت والإعداد", Toast.LENGTH_SHORT).show()
+                binding.btnInstallOldWa.text = getString(R.string.btn_install_old_wa)
+                binding.btnInstallOldWa.isEnabled = true
             }
         }
     }
@@ -298,6 +324,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun executeRestoreWhatsApp() {
+        binding.btnRestoreWhatsApp.text = getString(R.string.btn_restoring)
+        binding.btnRestoreWhatsApp.isEnabled = false
+
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -319,10 +348,16 @@ class MainActivity : AppCompatActivity() {
                 executeAdbCommand("am start -n com.android.backupconfirm/.BackupRestoreConfirmation")
                 
                 withContext(Dispatchers.Main) {
+                    binding.btnRestoreWhatsApp.text = getString(R.string.btn_restore_wa)
+                    binding.btnRestoreWhatsApp.isEnabled = true
                     showUpdateDialog()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    binding.btnRestoreWhatsApp.text = getString(R.string.btn_restore_wa)
+                    binding.btnRestoreWhatsApp.isEnabled = true
+                }
             }
         }
     }

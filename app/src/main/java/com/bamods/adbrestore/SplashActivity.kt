@@ -11,10 +11,10 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        // Show splash screen for 2 seconds then navigate to MainActivity
+        // Show splash screen for 4 seconds then navigate to MainActivity
         Handler(Looper.getMainLooper()).postDelayed({
             startActivity(Intent(this, MainActivity::class.java))
             finish()
-        }, 2000)
+        }, 4000)
     }
 }

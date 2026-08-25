@@ -5,11 +5,13 @@
     android:layout_height="match_parent"
     android:background="@color/color_bg">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/ivSplashLogo"
         android:layout_width="120dp"
         android:layout_height="120dp"
+        android:scaleType="centerCrop"
         android:src="@drawable/ic_app_logo_png"
+        app:shapeAppearanceOverlay="@style/CircleImageView"
         app:layout_constraintBottom_toTopOf="@+id/tvSplashTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,13 +37,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="by WhatsApp Tool Ultra"
+        android:text="@string/app_subtitle"
         android:textColor="@color/color_text_secondary"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tvSplashDesc"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSplashTitle" />
+
+    <TextView
+        android:id="@+id/tvSplashDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/splash_desc"
+        android:textColor="@color/primary"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSplashSubtitle" />
 
     <ProgressBar
         android:layout_width="wrap_content"

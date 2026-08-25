@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WARestore Official</string>
-    <string name="app_subtitle">WhatsApp Tool Ultra</string>
+    <string name="app_subtitle">by WhatsApp Tool Ultra</string>
     
     <string name="step_connection_title">1. اتصال الجهاز</string>
     <string name="status_disconnected">غير متصل</string>
+    <string name="status_connected">متصل: %1$s</string>
     <string name="btn_pair">إقران الجهاز</string>
     <string name="btn_connect">اتصال</string>
     
     <string name="step_install_title">2. تثبيت الواتساب</string>
     <string name="install_desc">تثبيت الواتساب القديم لكي تتمكن من استعادة النسخ الاحتياطي</string>
     <string name="btn_install_old_wa">تثبيت الواتساب القديم</string>
+    <string name="btn_installing">جاري التثبيت...</string>
     
     <string name="step_restore_title">3. استعادة البيانات</string>
     <string name="restore_desc">استعادة ملف النسخ الاحتياطي للواتساب</string>
     <string name="btn_restore_wa">استعادة البيانات</string>
+    <string name="btn_restoring">جاري الاستعادة...</string>
     
     <!-- Update Dialog Strings -->
     <string name="dialog_update_title">تحديث مطلوب</string>
@@ -23,9 +26,11 @@
     
     <string name="follow_me">تابعني على:</string>
     <string name="android_11_support">يدعم أندرويد 11 وأعلى فقط</string>
+    <string name="splash_desc">اقوى أداة لفك حظر وحل مشاكل الواتساب</string>
     
     <!-- Notification Pairing Strings -->
     <string name="notif_pairing_title">الاقتران اللاسلكي</string>
+    <string name="notif_searching_desc">جاري البحث عن كود الاقتران...</string>
     <string name="notif_pairing_desc">قم بتوسيع هذا الإشعار واضغط (إدخال الرمز) لكتابة رمز الاقتران.</string>
     <string name="notif_pairing_progress">جاري الاقتران...</string>
     <string name="notif_pairing_success">تم الاقتران بنجاح! يمكنك الاتصال الآن.</string>
