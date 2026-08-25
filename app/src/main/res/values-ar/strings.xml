@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WARestore Official</string>
+    <string name="app_subtitle">WhatsApp Tool Ultra</string>
+    
+    <string name="step_connection_title">1. اتصال الجهاز</string>
+    <string name="status_disconnected">غير متصل</string>
+    <string name="btn_pair">إقران الجهاز</string>
+    <string name="btn_connect">اتصال</string>
+    
+    <string name="step_install_title">2. تثبيت واتساب</string>
+    <string name="install_desc">تثبيت نسخة واتساب القديمة المدمجة (Basheer_WApp). تدعم التثبيت الإجباري لأندرويد 10 وحتى 14+ بدون فقدان البيانات.</string>
+    <string name="btn_install_old_wa">تثبيت واتساب القديم</string>
+    
+    <string name="step_restore_title">3. استعادة البيانات</string>
+    <string name="restore_desc">استخراج واستعادة ملف النسخة الاحتياطية wa.ab المدمج تلقائياً.</string>
+    <string name="btn_restore_wa">استعادة البيانات</string>
+    
+    <string name="follow_me">تابعني على:</string>
+</resources>

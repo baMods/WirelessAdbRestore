@@ -1,46 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">استعادة واتساب اللاسلكي</string>
-    <string name="app_subtitle">Wireless ADB &amp; WA Restore Pro</string>
+    <string name="app_name">WARestore Official</string>
+    <string name="app_subtitle">WhatsApp Tool Ultra</string>
     
-    <!-- Status -->
-    <string name="status_disconnected">غير متصل (Disconnected)</string>
-    <string name="status_pairing">جاري الاقتران...</string>
-    <string name="status_paired">تم الاقتران بنجاح!</string>
-    <string name="status_connecting">جاري الاتصال بـ ADB...</string>
-    <string name="status_connected">متصل بنجاح (ADB Ready)</string>
-    <string name="status_error">حدث خطأ في الاتصال</string>
-
-    <!-- Buttons -->
-    <string name="btn_pair">اقتران لاسلكي (اكتشاف تلقائي)</string>
-    <string name="btn_connect">اتصال سريع</string>
-    <string name="btn_disconnect">قطع الاتصال</string>
-    <string name="btn_install_old_wa">تثبيت واتساب القديم (Basheer_WApp)</string>
-    <string name="btn_grant_permissions">منح كافة الأذونات للواتساب</string>
-    <string name="btn_restore_wa">استعادة ملف wa.ab بنقرة واحدة</string>
-    <string name="btn_open_confirm_screen">فتح شاشة تأكيد الاستعادة</string>
-    <string name="btn_backup_wa">نسخ احتياطي لواتساب</string>
-    <string name="btn_run_cmd">تنفيذ</string>
-    <string name="btn_open_dev_settings">فتح إعدادات المطور</string>
-    <string name="btn_clear_logs">مسح السجل</string>
-    <string name="btn_copy_logs">نسخ السجل</string>
-    <string name="btn_choose_file">اختيار ملف wa.ab من الهاتف</string>
-
-    <!-- Dialog -->
-    <string name="dialog_pairing_title">الاقتران اللاسلكي الذكي</string>
-    <string name="dialog_pairing_desc">افتح خيارات المطور > تصحيح الأخطاء اللاسلكي > اقتران الجهاز برمز الاقتران:</string>
-    <string name="hint_pairing_port">منفذ الاقتران (Pairing Port)</string>
-    <string name="hint_pairing_code">رمز الاقتران (6 أرقام)</string>
-    <string name="hint_connect_port">منفذ الاتصال (Connection Port)</string>
-    <string name="hint_custom_cmd">اكتب أمر ADB هنا...</string>
-    <string name="dialog_cancel">إلغاء</string>
-    <string name="dialog_confirm_pair">بدء الاقتران والاتصال</string>
-
-    <!-- Instructions & Warnings -->
-    <string name="step_connection_title">1. الاتصال اللاسلكي (Wireless ADB)</string>
-    <string name="step_install_title">2. تثبيت الواتساب المتوافق (Basheer_WApp)</string>
-    <string name="step_restore_title">3. استعادة النسخة الاحتياطية (Restore wa.ab)</string>
-    <string name="terminal_title">سجل المخرجات والكونسول (Terminal)</string>
-    <string name="wa_file_path_label">مسار ملف النسخة الاحتياطية:</string>
-    <string name="default_wa_path">/sdcard/wa.ab</string>
-    <string name="permission_required">يلزم منح صلاحية الوصول للملفات</string>
+    <string name="step_connection_title">1. Device Connection</string>
+    <string name="status_disconnected">Disconnected</string>
+    <string name="btn_pair">Pair Device</string>
+    <string name="btn_connect">Connect</string>
+    
+    <string name="step_install_title">2. Install WhatsApp</string>
+    <string name="install_desc">Installs the embedded old version of WhatsApp (Basheer_WApp). Supports Android 10-14+ without data loss.</string>
+    <string name="btn_install_old_wa">Install Old WhatsApp</string>
+    
+    <string name="step_restore_title">3. Restore Data</string>
+    <string name="restore_desc">Extracts and restores the embedded wa.ab backup file automatically.</string>
+    <string name="btn_restore_wa">Restore Data</string>
+    
+    <string name="follow_me">Follow me:</string>
 </resources>
