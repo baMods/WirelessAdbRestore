@@ -217,19 +217,24 @@ class MainActivity : AppCompatActivity() {
         appendLog("[ADB] محاولة الاتصال بـ $host:$port...")
 
         lifecycleScope.launch {
-            val result = adbConnection.connect(host, port, useTls = true)
+            val result = adbConnection.connect(host, port, useTls = true) { logMsg ->
+                runOnUiThread { appendLog(logMsg) }
+            }
             if (result.isSuccess) {
                 setConnectionState(ConnectionState.CONNECTED, "متصل بـ ADB بنجاح (Port: $port)")
-                appendLog("[Success] تم الاتصال بخادم ADB الداخلي بنجاح! جاهز لتنفيذ الأوامر.")
+                appendLog("[Success] تم الاتصال والتأكيد بنجاح! جاهز لتنفيذ الأوامر.")
             } else {
-                // Try non-TLS fallback
-                val fallback = adbConnection.connect(host, port, useTls = false)
+                // Try authenticated non-TLS fallback
+                appendLog("[ADB] تجربة وضع الاتصال القياسي العادي...")
+                val fallback = adbConnection.connect(host, port, useTls = false) { logMsg ->
+                    runOnUiThread { appendLog(logMsg) }
+                }
                 if (fallback.isSuccess) {
                     setConnectionState(ConnectionState.CONNECTED, "متصل بـ ADB (Normal Mode)")
                     appendLog("[Success] تم الاتصال بخادم ADB بنجاح.")
                 } else {
                     setConnectionState(ConnectionState.DISCONNECTED, "غير متصل: ${result.exceptionOrNull()?.message}")
-                    appendLog("[Error] تعذر الاتصال بـ ADB. تأكد من تشغيل 'تصحيح الأخطاء اللاسلكي' وصحة المنفذ.")
+                    appendLog("[Error] تعذر الاتصال بـ ADB. تأكد من تشغيل 'تصحيح الأخطاء اللاسلكي' وصحة منفذ الاتصال.")
                 }
             }
         }
