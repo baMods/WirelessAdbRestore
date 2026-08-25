@@ -35,9 +35,9 @@ class MainActivity : AppCompatActivity() {
 
     private val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
 
-    // المسار المخصص لملف adb التنفيذي داخل ملفات التطبيق الداخلية
+    // المسار المخصص لملف adb التنفيذي الذي يستخرجه نظام أندرويد تلقائياً (بفضل extractNativeLibs=true)
     private val adbPath: String
-        get() = filesDir.absolutePath + "/adb"
+        get() = applicationInfo.nativeLibraryDir + "/libadb.so"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,9 +48,11 @@ class MainActivity : AppCompatActivity() {
         checkPermissions()
         setupUI()
         
-        // استخراج ملف adb وإعطائه صلاحيات التشغيل عند فتح التطبيق
+        // عند الفتح، إعطاء صلاحيات التشغيل لملف الـ adb
         lifecycleScope.launch(Dispatchers.IO) {
-            extractAdbFromAssets()
+            try {
+                Runtime.getRuntime().exec(arrayOf("chmod", "755", adbPath)).waitFor()
+            } catch (ignored: Exception) {}
         }
     }
 
@@ -109,32 +111,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun extractAdbFromAssets() = withContext(Dispatchers.IO) {
-        try {
-            val targetFile = File(adbPath)
-            if (targetFile.exists() && targetFile.length() > 0) return@withContext
 
-            withContext(Dispatchers.Main) { appendLog("[System] جاري استخراج ملف ADB المدمج...") }
-            
-            // تحديد معمارية المعالج
-            val abi = Build.SUPPORTED_ABIS.firstOrNull { it.contains("arm64") }?.let { "arm64-v8a" }
-                ?: Build.SUPPORTED_ABIS.firstOrNull { it.contains("armeabi-v7a") }?.let { "armeabi-v7a" }
-                ?: Build.SUPPORTED_ABIS.firstOrNull { it.contains("x86_64") }?.let { "x86_64" }
-                ?: "x86"
-
-            assets.open("adb/$abi/adb").use { input ->
-                FileOutputStream(targetFile).use { output ->
-                    input.copyTo(output)
-                }
-            }
-            // إعطاء صلاحيات التشغيل
-            Runtime.getRuntime().exec(arrayOf("chmod", "755", adbPath)).waitFor()
-            withContext(Dispatchers.Main) { appendLog("[System] تم تجهيز ملف ADB بنجاح ($abi).") }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            withContext(Dispatchers.Main) { appendLog("[Error] فشل في استخراج ADB: ${e.message}") }
-        }
-    }
 
     private fun showPairingDialog() {
         PairingDialog(this) { host, pairingPort, pairingCode, connectPort ->
