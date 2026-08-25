@@ -318,10 +318,32 @@ class MainActivity : AppCompatActivity() {
                 executeAdbCommand(restoreCmd)
 
                 executeAdbCommand("am start -n com.android.backupconfirm/.BackupRestoreConfirmation")
+                
+                withContext(Dispatchers.Main) {
+                    showUpdateDialog()
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
+    }
+
+    private fun showUpdateDialog() {
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.dialog_update_title))
+            .setMessage(getString(R.string.dialog_update_desc))
+            .setPositiveButton(getString(R.string.btn_yes)) { dialog, _ ->
+                dialog.dismiss()
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.whatsapp"))
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.whatsapp"))
+                    startActivity(intent)
+                }
+            }
+            .setCancelable(false)
+            .show()
     }
 
     private fun executeAdbCommand(cmd: String) {

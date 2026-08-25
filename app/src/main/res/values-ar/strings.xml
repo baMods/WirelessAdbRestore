@@ -8,13 +8,18 @@
     <string name="btn_pair">إقران الجهاز</string>
     <string name="btn_connect">اتصال</string>
     
-    <string name="step_install_title">2. تثبيت واتساب</string>
-    <string name="install_desc">تثبيت نسخة واتساب القديمة المدمجة (Basheer_WApp). تدعم التثبيت الإجباري لأندرويد 10 وحتى 14+ بدون فقدان البيانات.</string>
-    <string name="btn_install_old_wa">تثبيت واتساب القديم</string>
+    <string name="step_install_title">2. تثبيت الواتساب</string>
+    <string name="install_desc">تثبيت الواتساب القديم لكي تتمكن من استعادة النسخ الاحتياطي</string>
+    <string name="btn_install_old_wa">تثبيت الواتساب القديم</string>
     
     <string name="step_restore_title">3. استعادة البيانات</string>
-    <string name="restore_desc">استخراج واستعادة ملف النسخة الاحتياطية wa.ab المدمج تلقائياً.</string>
+    <string name="restore_desc">استعادة ملف النسخ الاحتياطي للواتساب</string>
     <string name="btn_restore_wa">استعادة البيانات</string>
+    
+    <!-- Update Dialog Strings -->
+    <string name="dialog_update_title">تحديث مطلوب</string>
+    <string name="dialog_update_desc">الآن قم بتحديث الواتساب من متجر play</string>
+    <string name="btn_yes">نعم</string>
     
     <string name="follow_me">تابعني على:</string>
     <string name="android_11_support">يدعم أندرويد 11 وأعلى فقط</string>

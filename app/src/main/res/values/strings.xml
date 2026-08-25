@@ -9,12 +9,17 @@
     <string name="btn_connect">Connect</string>
     
     <string name="step_install_title">2. Install WhatsApp</string>
-    <string name="install_desc">Installs the embedded old version of WhatsApp (Basheer_WApp). Supports Android 10-14+ without data loss.</string>
+    <string name="install_desc">Install the old WhatsApp to be able to restore the backup.</string>
     <string name="btn_install_old_wa">Install Old WhatsApp</string>
     
     <string name="step_restore_title">3. Restore Data</string>
-    <string name="restore_desc">Extracts and restores the embedded wa.ab backup file automatically.</string>
+    <string name="restore_desc">Restore WhatsApp backup file.</string>
     <string name="btn_restore_wa">Restore Data</string>
+    
+    <!-- Update Dialog Strings -->
+    <string name="dialog_update_title">Update Required</string>
+    <string name="dialog_update_desc">Now update WhatsApp from the Play Store.</string>
+    <string name="btn_yes">Yes</string>
     
     <string name="follow_me">Follow me:</string>
     <string name="android_11_support">Supports Android 11 and above</string>
