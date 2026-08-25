@@ -11,7 +11,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.bamods.adbrestore.databinding.ActivityMainBinding
-import com.bamods.adbrestore.ui.PairingDialog
 import com.bamods.adbrestore.utils.PrefsManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -155,11 +154,11 @@ class MainActivity : AppCompatActivity() {
         createNotificationChannel()
 
         // 1. Start Auto-discovery for pairing port
-        com.bamods.adbrestore.adb.AdbMdnsDiscovery(this).startDiscovery(object : com.bamods.adbrestore.adb.AdbMdnsDiscovery.DiscoveryListener {
-            override fun onServiceFound(port: Int) {
-                prefs.lastPairingPort = port
-            }
-        })
+        val mdns = com.bamods.adbrestore.adb.AdbMdnsDiscovery(this)
+        mdns.onPairingDiscovered = { port, _ ->
+            prefs.lastPairingPort = port
+        }
+        mdns.startDiscovery()
 
         // 2. Build the Notification with Direct Reply
         val replyLabel = getString(R.string.hint_pairing_code)
